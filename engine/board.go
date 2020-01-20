@@ -55,7 +55,7 @@ func NewBoard() Board {
 }
 
 func (p Peg) isFull() bool {
-	return p.Slot[2] == None
+	return p.Slot[2] != None
 }
 
 func (p Peg) add(c Colour) error {
@@ -84,7 +84,7 @@ func (c Colour) String() string {
 	}
 }
 
-func (b Board) isFull() bool {
+func (b Board) IsFull() bool {
 	for _, peg := range b.Peg {
 		if !peg.isFull() {
 			return false
@@ -207,7 +207,7 @@ func (b Board) Evaluate() int {
 	redScore := b.countCompleteLines(Red)
 	blueScore := b.countCompleteLines(Blue)
 
-	if b.isFull() {
+	if b.IsFull() {
 		if redScore > blueScore {
 			return 999
 		} else if blueScore > redScore {
