@@ -209,18 +209,18 @@ func (b Board) CountCompleteLines(c Colour) int {
 }
 
 func (b Board) Evaluate() int {
-	redScore := b.CountCompleteLines(Red)
-	blueScore := b.CountCompleteLines(Blue)
+	redLines := b.CountCompleteLines(Red)
+	blueLines := b.CountCompleteLines(Blue)
 
 	if b.IsFull() {
-		if redScore > blueScore {
+		if redLines > blueLines {
 			return RedWinScore
-		} else if blueScore > redScore {
+		} else if blueLines > redLines {
 			return BlueWinScore
 		} else {
 			return 0
 		}
 	}
 
-	return redScore - blueScore
+	return redLines - blueLines
 }
