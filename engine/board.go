@@ -2,11 +2,11 @@ package engine
 
 import "fmt"
 
-type Color int
+type Colour int
 type PegLabel int
 
 const (
-	None Color = iota
+	None Colour = iota
 	Red
 	Blue
 )
@@ -22,8 +22,22 @@ const (
 	H
 )
 
+type columnSet [3]PegLabel
+
+// [A]   [B]   [C]
+//    [D]   [E]
+// [F]   [G]   [H]
+var boardColumnSet = []columnSet{
+	{A, B, C},
+	{A, D, G},
+	{F, G, H},
+	{F, D, B},
+	{G, E, C},
+	{B, E, H},
+}
+
 type Peg struct {
-	Slot [3]Color
+	Slot [3]Colour
 }
 type Board struct {
 	Peg [8]Peg
@@ -40,7 +54,25 @@ func NewBoard() Board {
 	return board
 }
 
-func (c Color) String() string {
+func (p Peg) isFull() bool {
+	return p.Slot[2] == None
+}
+
+func (p Peg) add(c Colour) error {
+	if p.Slot[0] == None {
+		p.Slot[0] = c
+	} else if p.Slot[1] == None {
+		p.Slot[1] = c
+	} else if p.Slot[2] == None {
+		p.Slot[2] = c
+	} else {
+		return fmt.Errorf("peg is full")
+	}
+
+	return nil
+}
+
+func (c Colour) String() string {
 	if c == Red {
 		return "R"
 	} else if c == Blue {
@@ -50,6 +82,16 @@ func (c Color) String() string {
 	} else {
 		return "ERROR"
 	}
+}
+
+func (b Board) isFull() bool {
+	for _, peg := range b.Peg {
+		if !peg.isFull() {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (b Board) Print() {
@@ -79,4 +121,101 @@ func (b Board) Print() {
 		}
 		fmt.Println()
 	}
+}
+
+func (p Peg) completed() Colour {
+	if (p.Slot[0]) == p.Slot[1] && p.Slot[1] == p.Slot[2] {
+		return p.Slot[0]
+	}
+
+	return None
+}
+
+// count vertical lines on one peg each
+//
+// [R] [ ] [ ]
+// [R] [ ] [ ]
+// [R] [ ] [ ]
+func (b Board) countCompleteVerticalLines(c Colour) int {
+	completeLines := 0
+
+	for _, peg := range b.Peg {
+		if peg.completed() == c {
+			completeLines++
+		}
+	}
+
+	return completeLines
+}
+
+// count horizontal lines across three pegs
+//
+// [ ] [ ] [ ]
+// [R] [R] [R]
+// [ ] [ ] [ ]
+func (b Board) countCompleteHorizontalLines(c Colour, cs columnSet) int {
+	completeLines := 0
+
+	for slot := 0; slot < 3; slot++ {
+		colour := 0
+		for peg := 0; peg < 3; peg++ {
+			if b.Peg[cs[peg]].Slot[slot] == c {
+				colour++
+			}
+		}
+		if colour == 3 {
+			completeLines++
+		}
+	}
+
+	return completeLines
+}
+
+// count diagonal lines across three pegs
+//
+// [R] [ ] [ ]
+// [ ] [R] [ ]
+// [ ] [ ] [R]
+func (b Board) countCompleteDiagonalLines(c Colour, cs columnSet) int {
+	completeLines := 0
+
+	if b.Peg[cs[0]].Slot[0] == c && b.Peg[cs[1]].Slot[1] == c && b.Peg[cs[2]].Slot[2] == c {
+		completeLines++
+	}
+
+	if b.Peg[cs[0]].Slot[2] == c && b.Peg[cs[1]].Slot[1] == c && b.Peg[cs[2]].Slot[0] == c {
+		completeLines++
+	}
+
+	return completeLines
+}
+
+func (b Board) countCompleteLines(c Colour) int {
+	completeLines := 0
+
+	for _, bcs := range boardColumnSet {
+		completeLines += b.countCompleteDiagonalLines(c, bcs)
+		completeLines += b.countCompleteHorizontalLines(c, bcs)
+	}
+
+	completeLines += b.countCompleteVerticalLines(c)
+
+	return completeLines
+}
+
+func (b Board) Evaluate() int {
+	redScore := b.countCompleteLines(Red)
+	blueScore := b.countCompleteLines(Blue)
+
+	if b.isFull() {
+		if redScore > blueScore {
+			return 999
+		} else if blueScore > redScore {
+			return -999
+		} else {
+			return 0
+		}
+	}
+
+	return redScore - blueScore
 }
