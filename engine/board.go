@@ -12,6 +12,11 @@ const (
 )
 
 const (
+	RedWinScore  = 999
+	BlueWinScore = -999
+)
+
+const (
 	A PegLabel = iota
 	B
 	C
@@ -58,7 +63,7 @@ func (p Peg) isFull() bool {
 	return p.Slot[2] != None
 }
 
-func (p Peg) add(c Colour) error {
+func (p *Peg) Add(c Colour) error {
 	if p.Slot[0] == None {
 		p.Slot[0] = c
 	} else if p.Slot[1] == None {
@@ -190,7 +195,7 @@ func (b Board) countCompleteDiagonalLines(c Colour, cs columnSet) int {
 	return completeLines
 }
 
-func (b Board) countCompleteLines(c Colour) int {
+func (b Board) CountCompleteLines(c Colour) int {
 	completeLines := 0
 
 	for _, bcs := range boardColumnSet {
@@ -204,14 +209,14 @@ func (b Board) countCompleteLines(c Colour) int {
 }
 
 func (b Board) Evaluate() int {
-	redScore := b.countCompleteLines(Red)
-	blueScore := b.countCompleteLines(Blue)
+	redScore := b.CountCompleteLines(Red)
+	blueScore := b.CountCompleteLines(Blue)
 
 	if b.IsFull() {
 		if redScore > blueScore {
-			return 999
+			return RedWinScore
 		} else if blueScore > redScore {
-			return -999
+			return BlueWinScore
 		} else {
 			return 0
 		}
