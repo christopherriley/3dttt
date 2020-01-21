@@ -29,6 +29,10 @@ func NewGame(firstPlayer Colour) Game {
 	return game
 }
 
+func (g Game) GetBoard() Board {
+	return g.board
+}
+
 func (g Game) GetGameState() GameState {
 	var state GameState
 	state.RedLines = g.board.CountCompleteLines(Red)
@@ -49,4 +53,18 @@ func (g Game) GetGameState() GameState {
 	}
 
 	return state
+}
+
+func (g *Game) Move(p PegLabel) error {
+	if err := g.board.Peg[p].Add(g.nextMove); err != nil {
+		return err
+	}
+
+	if g.nextMove == Red {
+		g.nextMove = Blue
+	} else {
+		g.nextMove = Red
+	}
+
+	return nil
 }

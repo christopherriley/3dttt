@@ -7,15 +7,44 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+func createBlueWinsThreeToTwoBoard() engine.Board {
+	var board engine.Board
+
+	for _, move := range testsamples.BlueWinsThreeToTwo {
+		board.Peg[move.Peg].Add(move.Colour)
+	}
+
+	return board
+}
+
+func createOneHorizontalRedRow() engine.Board {
+	var board engine.Board
+
+	board.Peg[engine.A].Add(engine.Red)
+	board.Peg[engine.B].Add(engine.Red)
+	board.Peg[engine.C].Add(engine.Red)
+
+	return board
+}
+
+func createOneVerticalBlueRow() engine.Board {
+	var board engine.Board
+
+	board.Peg[engine.A].Add(engine.Blue)
+	board.Peg[engine.A].Add(engine.Blue)
+	board.Peg[engine.A].Add(engine.Blue)
+
+	return board
+}
+
 var _ = Describe("Board Tests", func() {
 
 	var subject engine.Board
 
-	BeforeEach(func() {
-		subject = engine.NewBoard()
-	})
-
 	Describe("with empty board", func() {
+		BeforeEach(func() {
+			subject = engine.NewBoard()
+		})
 		It("is not full", func() {
 			Expect(subject.IsFull()).To(BeFalse())
 		})
@@ -29,8 +58,8 @@ var _ = Describe("Board Tests", func() {
 	})
 
 	Describe("with one horizontal red row", func() {
-		JustBeforeEach(func() {
-			subject = testsamples.CreateOneHorizontalRedRow()
+		BeforeEach(func() {
+			subject = createOneHorizontalRedRow()
 		})
 		It("is not full", func() {
 			Expect(subject.IsFull()).To(BeFalse())
@@ -44,8 +73,8 @@ var _ = Describe("Board Tests", func() {
 	})
 
 	Describe("with one vertical blue row", func() {
-		JustBeforeEach(func() {
-			subject = testsamples.CreateOneVerticalBlueRow()
+		BeforeEach(func() {
+			subject = createOneVerticalBlueRow()
 		})
 		It("is not full", func() {
 			Expect(subject.IsFull()).To(BeFalse())
@@ -59,8 +88,8 @@ var _ = Describe("Board Tests", func() {
 	})
 
 	Describe("with full board, blue winner", func() {
-		JustBeforeEach(func() {
-			subject = testsamples.CreateBlueWinsThreeToTwoBoard()
+		BeforeEach(func() {
+			subject = createBlueWinsThreeToTwoBoard()
 		})
 		It("is full", func() {
 			Expect(subject.IsFull()).To(BeTrue())
@@ -74,7 +103,4 @@ var _ = Describe("Board Tests", func() {
 			Expect(subject.CountCompleteLines(engine.Blue)).To(Equal(3))
 		})
 	})
-})
-
-var _ = Describe("Game Tests", func() {
 })

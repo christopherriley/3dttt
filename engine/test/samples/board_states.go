@@ -1,25 +1,12 @@
 package testsamples
 
-import "github.com/christopherriley/3dttt/engine"
+import (
+	"github.com/christopherriley/3dttt/engine"
+)
 
-func CreateOneHorizontalRedRow() engine.Board {
-	var board engine.Board
-
-	board.Peg[engine.A].Add(engine.Red)
-	board.Peg[engine.B].Add(engine.Red)
-	board.Peg[engine.C].Add(engine.Red)
-
-	return board
-}
-
-func CreateOneVerticalBlueRow() engine.Board {
-	var board engine.Board
-
-	board.Peg[engine.A].Add(engine.Blue)
-	board.Peg[engine.A].Add(engine.Blue)
-	board.Peg[engine.A].Add(engine.Blue)
-
-	return board
+type Move struct {
+	Peg    engine.PegLabel
+	Colour engine.Colour
 }
 
 // RED LINE 1: vertical on peg A
@@ -38,40 +25,30 @@ func CreateOneVerticalBlueRow() engine.Board {
 // [R]   [B]   [R]
 // [R]   [R]   [B]
 // [B]   [B]   [B]
-func CreateBlueWinsThreeToTwoBoard() engine.Board {
-	var board engine.Board
-
-	board.Peg[engine.A].Add(engine.Red)
-	board.Peg[engine.A].Add(engine.Red)
-	board.Peg[engine.A].Add(engine.Red)
-
-	board.Peg[engine.B].Add(engine.Blue)
-	board.Peg[engine.B].Add(engine.Red)
-	board.Peg[engine.B].Add(engine.Blue)
-
-	board.Peg[engine.C].Add(engine.Red)
-	board.Peg[engine.C].Add(engine.Blue)
-	board.Peg[engine.C].Add(engine.Blue)
-
-	board.Peg[engine.D].Add(engine.Red)
-	board.Peg[engine.D].Add(engine.Blue)
-	board.Peg[engine.D].Add(engine.Blue)
-
-	board.Peg[engine.E].Add(engine.Blue)
-	board.Peg[engine.E].Add(engine.Red)
-	board.Peg[engine.E].Add(engine.Red)
-
-	board.Peg[engine.F].Add(engine.Red)
-	board.Peg[engine.F].Add(engine.Red)
-	board.Peg[engine.F].Add(engine.Blue)
-
-	board.Peg[engine.G].Add(engine.Blue)
-	board.Peg[engine.G].Add(engine.Red)
-	board.Peg[engine.G].Add(engine.Blue)
-
-	board.Peg[engine.H].Add(engine.Red)
-	board.Peg[engine.H].Add(engine.Blue)
-	board.Peg[engine.H].Add(engine.Blue)
-
-	return board
+//
+var BlueWinsThreeToTwo = []Move{
+	Move{engine.A, engine.Red},
+	Move{engine.B, engine.Blue},
+	Move{engine.C, engine.Red},
+	Move{engine.C, engine.Blue},
+	Move{engine.A, engine.Red},
+	Move{engine.C, engine.Blue},
+	Move{engine.D, engine.Red},
+	Move{engine.D, engine.Blue},
+	Move{engine.B, engine.Red},
+	Move{engine.B, engine.Blue},
+	Move{engine.A, engine.Red},
+	Move{engine.D, engine.Blue},
+	Move{engine.F, engine.Red},
+	Move{engine.E, engine.Blue},
+	Move{engine.E, engine.Red},
+	Move{engine.G, engine.Blue},
+	Move{engine.G, engine.Red},
+	Move{engine.G, engine.Blue},
+	Move{engine.H, engine.Red},
+	Move{engine.H, engine.Blue},
+	Move{engine.F, engine.Red},
+	Move{engine.F, engine.Blue},
+	Move{engine.E, engine.Red},
+	Move{engine.H, engine.Blue},
 }
