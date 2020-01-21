@@ -7,36 +7,6 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func createBlueWinsThreeToTwoBoard() engine.Board {
-	var board engine.Board
-
-	for _, move := range testsamples.BlueWinsThreeToTwo {
-		board.Peg[move.Peg].Add(move.Colour)
-	}
-
-	return board
-}
-
-func createOneHorizontalRedRow() engine.Board {
-	var board engine.Board
-
-	board.Peg[engine.A].Add(engine.Red)
-	board.Peg[engine.B].Add(engine.Red)
-	board.Peg[engine.C].Add(engine.Red)
-
-	return board
-}
-
-func createOneVerticalBlueRow() engine.Board {
-	var board engine.Board
-
-	board.Peg[engine.A].Add(engine.Blue)
-	board.Peg[engine.A].Add(engine.Blue)
-	board.Peg[engine.A].Add(engine.Blue)
-
-	return board
-}
-
 var _ = Describe("Board Tests", func() {
 
 	var subject engine.Board
@@ -59,7 +29,10 @@ var _ = Describe("Board Tests", func() {
 
 	Describe("with one horizontal red row", func() {
 		BeforeEach(func() {
-			subject = createOneHorizontalRedRow()
+			subject = engine.NewBoard()
+			subject.Peg[engine.A].Add(engine.Red)
+			subject.Peg[engine.B].Add(engine.Red)
+			subject.Peg[engine.C].Add(engine.Red)
 		})
 		It("is not full", func() {
 			Expect(subject.IsFull()).To(BeFalse())
@@ -74,7 +47,10 @@ var _ = Describe("Board Tests", func() {
 
 	Describe("with one vertical blue row", func() {
 		BeforeEach(func() {
-			subject = createOneVerticalBlueRow()
+			subject = engine.NewBoard()
+			subject.Peg[engine.A].Add(engine.Blue)
+			subject.Peg[engine.A].Add(engine.Blue)
+			subject.Peg[engine.A].Add(engine.Blue)
 		})
 		It("is not full", func() {
 			Expect(subject.IsFull()).To(BeFalse())
@@ -89,7 +65,10 @@ var _ = Describe("Board Tests", func() {
 
 	Describe("with full board, blue winner", func() {
 		BeforeEach(func() {
-			subject = createBlueWinsThreeToTwoBoard()
+			subject = engine.NewBoard()
+			for _, move := range testsamples.BlueWinsThreeToTwo {
+				subject.Peg[move.Peg].Add(move.Colour)
+			}
 		})
 		It("is full", func() {
 			Expect(subject.IsFull()).To(BeTrue())
