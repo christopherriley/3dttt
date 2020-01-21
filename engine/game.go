@@ -1,55 +1,52 @@
 package engine
 
-import "fmt"
-
-type GameState int
+type BoardState int
 
 const (
-	NeedNextMove GameState = iota
+	RedToMove BoardState = iota
+	BlueToMove
 	RedWins
 	BlueWins
-	Tie
+	Draw
 )
 
+type GameState struct {
+	RedLines   int
+	BlueLines  int
+	BoardState BoardState
+}
+
 type Game struct {
-	firstPlayer Colour
-	nextMove    Colour
-	board       Board
+	nextMove Colour
+	board    Board
 }
 
 func NewGame(firstPlayer Colour) Game {
 	var game Game
-	game.firstPlayer = firstPlayer
+	game.nextMove = firstPlayer
 	game.board = NewBoard()
 
 	return game
 }
 
-func (g Game) GetNextMoveColour() Colour {
-	return g.nextMove
-}
-
-func (g Game) NextMove(pl PegLabel) (GameState, error) {
-	if err := g.board.Peg[pl].Add(g.nextMove); err != nil {
-		return NeedNextMove, fmt.Errorf("Illegal move")
-	}
+func (g Game) GetGameState() GameState {
+	var state GameState
+	state.RedLines = g.board.CountCompleteLines(Red)
+	state.BlueLines = g.board.CountCompleteLines(Blue)
 
 	if g.board.IsFull() {
-		score := g.board.Evaluate()
-		if score == RedWinScore {
-			return RedWins, nil
-		} else if score == BlueWinScore {
-			return BlueWins, nil
+		if state.RedLines > state.BlueLines {
+			state.BoardState = RedWins
+		} else if state.BlueLines > state.RedLines {
+			state.BoardState = BlueWins
+		} else {
+			state.BoardState = Draw
 		}
-
-		return Tie, nil
-	}
-
-	if g.nextMove == Blue {
-		g.nextMove = Red
+	} else if g.nextMove == Red {
+		state.BoardState = RedToMove
 	} else {
-		g.nextMove = Blue
+		state.BoardState = BlueToMove
 	}
 
-	return NeedNextMove, nil
+	return state
 }

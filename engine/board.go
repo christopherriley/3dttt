@@ -12,11 +12,6 @@ const (
 )
 
 const (
-	RedWinScore  = 999
-	BlueWinScore = -999
-)
-
-const (
 	A PegLabel = iota
 	B
 	C
@@ -206,21 +201,4 @@ func (b Board) CountCompleteLines(c Colour) int {
 	completeLines += b.countCompleteVerticalLines(c)
 
 	return completeLines
-}
-
-func (b Board) Evaluate() int {
-	redLines := b.CountCompleteLines(Red)
-	blueLines := b.CountCompleteLines(Blue)
-
-	if b.IsFull() {
-		if redLines > blueLines {
-			return RedWinScore
-		} else if blueLines > redLines {
-			return BlueWinScore
-		} else {
-			return 0
-		}
-	}
-
-	return redLines - blueLines
 }
