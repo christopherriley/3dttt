@@ -1,8 +1,6 @@
 package cpu_player
 
 import (
-	"fmt"
-
 	"github.com/christopherriley/3dttt/engine"
 )
 
@@ -16,20 +14,14 @@ func evaluateBoard(b engine.Board) int {
 
 	if b.IsFull() {
 		if redLines > blueLines {
-			fmt.Println("evaluateBoard(): red victory")
 			return RedVictoryScore
 		} else if blueLines > redLines {
-			fmt.Println("evaluateBoard(): blue victory")
 			return BlueVictoryScore
 		} else {
-			fmt.Println("evaluateBoard(): draw")
 			return DrawScore
 		}
 	}
 
-	if redLines != blueLines {
-		fmt.Printf("evaluateBoard(): %d\n", redLines-blueLines)
-	}
 	return redLines - blueLines
 }
 
@@ -62,24 +54,17 @@ func (bn BoardNode) getDepth() int {
 }
 
 func (bn *BoardNode) AddChildren(c engine.Colour, maxDepth int) {
-	if bn.getDepth() == maxDepth {
-		return
-	}
-
-	for peg := engine.A; peg <= engine.H; peg++ {
-		childBoard := bn.board
-		if err := childBoard.Peg[peg].Add(c); err == nil {
-			newChildNode := NewBoardNode(childBoard, bn, peg)
-			/*val := evaluateBoard(childBoard)
-			if val != 0 {
-				childBoard.Print()
-				fmt.Printf("board value: %d\n", val)
-			}*/
-			bn.children = append(bn.children, newChildNode)
-			if c == engine.Red {
-				newChildNode.AddChildren(engine.Blue, maxDepth)
-			} else {
-				newChildNode.AddChildren(engine.Red, maxDepth)
+	if bn.getDepth() < maxDepth {
+		for peg := engine.A; peg <= engine.H; peg++ {
+			childBoard := bn.board
+			if err := childBoard.Peg[peg].Add(c); err == nil {
+				newChildNode := NewBoardNode(childBoard, bn, peg)
+				bn.children = append(bn.children, newChildNode)
+				if c == engine.Red {
+					newChildNode.AddChildren(engine.Blue, maxDepth)
+				} else {
+					newChildNode.AddChildren(engine.Red, maxDepth)
+				}
 			}
 		}
 	}
@@ -108,6 +93,5 @@ func (bn *BoardNode) AddChildren(c engine.Colour, maxDepth int) {
 
 func (bn BoardNode) GetBestMove(c engine.Colour, maxDepth int) engine.PegLabel {
 	bn.AddChildren(c, maxDepth)
-	fmt.Printf("best move: %s, score: %d\n", engine.PegToString(bn.bestMove), bn.nodeScore)
 	return bn.bestMove
 }

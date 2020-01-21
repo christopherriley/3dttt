@@ -55,7 +55,7 @@ func main() {
 	for {
 		game.GetBoard().Print()
 		gameState := game.GetGameState()
-		fmt.Printf("Red: %d\n", gameState.RedLines)
+		fmt.Printf(" Red: %d\n", gameState.RedLines)
 		fmt.Printf("Blue: %d\n", gameState.BlueLines)
 		if gameState.BoardState == engine.RedWins {
 			fmt.Println("Red Wins!")
