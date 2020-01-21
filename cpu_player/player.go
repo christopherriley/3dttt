@@ -5,6 +5,6 @@ import (
 )
 
 func GetNextMove(b engine.Board, c engine.Colour, maxDepth int) engine.PegLabel {
-	bn := NewBoardNode(b)
+	bn := NewBoardNode(b, nil, engine.NoPeg)
 	return bn.GetBestMove(c, maxDepth)
 }
