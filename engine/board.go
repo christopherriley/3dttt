@@ -1,6 +1,8 @@
 package engine
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Colour int
 type PegLabel int
@@ -20,6 +22,7 @@ const (
 	F
 	G
 	H
+	NoPeg
 )
 
 type columnSet [3]PegLabel
@@ -41,6 +44,52 @@ type Peg struct {
 }
 type Board struct {
 	Peg [8]Peg
+}
+
+func StringToPeg(s string) (PegLabel, error) {
+	switch s[0] {
+	case 'A':
+		return A, nil
+	case 'B':
+		return B, nil
+	case 'C':
+		return C, nil
+	case 'D':
+		return D, nil
+	case 'E':
+		return E, nil
+	case 'F':
+		return F, nil
+	case 'G':
+		return G, nil
+	case 'H':
+		return H, nil
+	default:
+		return NoPeg, fmt.Errorf("invalid peg '%s'", s)
+	}
+}
+
+func PegToString(p PegLabel) string {
+	switch p {
+	case A:
+		return "A"
+	case B:
+		return "B"
+	case C:
+		return "C"
+	case D:
+		return "D"
+	case E:
+		return "E"
+	case F:
+		return "F"
+	case G:
+		return "G"
+	case H:
+		return "H"
+	default:
+		return "NoPeg"
+	}
 }
 
 func NewBoard() Board {
@@ -95,7 +144,7 @@ func (b Board) IsFull() bool {
 }
 
 func (b Board) Print() {
-	for slot := 0; slot < 3; slot++ {
+	for slot := 2; slot >= 0; slot-- {
 		for peg := A; peg <= C; peg++ {
 			if peg == B || peg == C {
 				fmt.Print("   ")
@@ -105,14 +154,14 @@ func (b Board) Print() {
 		fmt.Println()
 	}
 
-	for slot := 0; slot < 3; slot++ {
+	for slot := 2; slot >= 0; slot-- {
 		for peg := D; peg <= E; peg++ {
 			fmt.Printf("   [%s]", b.Peg[peg].Slot[slot])
 		}
 		fmt.Println()
 	}
 
-	for slot := 0; slot < 3; slot++ {
+	for slot := 2; slot >= 0; slot-- {
 		for peg := F; peg <= H; peg++ {
 			if peg == G || peg == H {
 				fmt.Print("   ")
