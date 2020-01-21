@@ -52,3 +52,24 @@ var BlueWinsThreeToTwo = []Move{
 	Move{engine.E, engine.Red},
 	Move{engine.H, engine.Blue},
 }
+
+// [R]   [B]   [R]
+// [B]   [R]   [B]
+// [R]   [B]   [R]
+//    [ ]   [ ]
+//    [ ]   [ ]
+//    [ ]   [ ]
+// [ ]   [ ]   [ ]
+// [ ]   [ ]   [ ]
+// [ ]   [ ]   [ ]
+var RedWinningTwoToZero = []Move{
+	Move{engine.A, engine.Red},
+	Move{engine.A, engine.Blue},
+	Move{engine.A, engine.Red},
+	Move{engine.B, engine.Blue},
+	Move{engine.B, engine.Red},
+	Move{engine.B, engine.Blue},
+	Move{engine.C, engine.Red},
+	Move{engine.C, engine.Blue},
+	Move{engine.C, engine.Red},
+}

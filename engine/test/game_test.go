@@ -7,16 +7,6 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func createBlueWinsThreeToTwoGame() engine.Game {
-	game := engine.NewGame(engine.Red)
-
-	for _, move := range testsamples.BlueWinsThreeToTwo {
-		game.Move(move.Peg)
-	}
-
-	return game
-}
-
 var _ = Describe("Game Tests", func() {
 
 	var subject engine.Game
@@ -25,10 +15,10 @@ var _ = Describe("Game Tests", func() {
 		BeforeEach(func() {
 			subject = engine.NewGame(engine.Red)
 		})
-		It("is has zero blue lines", func() {
+		It("has zero blue lines", func() {
 			Expect(subject.GetGameState().BlueLines).To(Equal(0))
 		})
-		It("it has zero red lines", func() {
+		It("has zero red lines", func() {
 			Expect(subject.GetGameState().RedLines).To(Equal(0))
 		})
 		It("is red's turn", func() {
@@ -38,16 +28,39 @@ var _ = Describe("Game Tests", func() {
 
 	Describe("completed game with blue winning three to two", func() {
 		BeforeEach(func() {
-			subject = createBlueWinsThreeToTwoGame()
+			subject = engine.NewGame(engine.Red)
+
+			for _, move := range testsamples.BlueWinsThreeToTwo {
+				subject.Move(move.Peg)
+			}
 		})
-		It("is has three blue lines", func() {
+		It("has three blue lines", func() {
 			Expect(subject.GetGameState().BlueLines).To(Equal(3))
 		})
-		It("it has two red lines", func() {
+		It("has two red lines", func() {
 			Expect(subject.GetGameState().RedLines).To(Equal(2))
 		})
 		It("has blue as winner", func() {
 			Expect(subject.GetGameState().BoardState).To(Equal(engine.BlueWins))
+		})
+	})
+
+	Describe("in-progress game with red winning two to zero", func() {
+		BeforeEach(func() {
+			subject = engine.NewGame(engine.Red)
+
+			for _, move := range testsamples.RedWinningTwoToZero {
+				subject.Move(move.Peg)
+			}
+		})
+		It("has zero blue lines", func() {
+			Expect(subject.GetGameState().BlueLines).To(Equal(0))
+		})
+		It("has two red lines", func() {
+			Expect(subject.GetGameState().RedLines).To(Equal(2))
+		})
+		It("is blue's turn", func() {
+			Expect(subject.GetGameState().BoardState).To(Equal(engine.BlueToMove))
 		})
 	})
 })
