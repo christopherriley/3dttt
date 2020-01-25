@@ -2,10 +2,13 @@ package command
 
 import (
 	"fmt"
+	"net/http"
+
+	"github.com/christopherriley/3dttt/server/state"
 )
 
 type Command interface {
-	Execute() error
+	Execute(s *state.GlobalState, w http.ResponseWriter) error
 }
 
 func CreateCommand(name string, params map[string]interface{}) (Command, error) {

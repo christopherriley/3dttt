@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/christopherriley/3dttt/server/command"
+	"github.com/christopherriley/3dttt/server/state"
 	"github.com/gorilla/mux"
 )
 
@@ -19,6 +20,8 @@ type newGameCommand struct {
 	PlayerColour    string `json:"colour"`
 	PlayerMoveFirst string `json:"move_first"`
 }
+
+var globalState state.GlobalState
 
 func gamePostHandler(w http.ResponseWriter, req *http.Request) {
 	fmt.Println(req.Method)
@@ -44,12 +47,14 @@ func gamePostHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	cmd.Execute()
-
-	w.Header().Set("Content-Type", "application/json")
+	if err := cmd.Execute(&globalState, w); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to execute command: %s\"}\n", err)))
+	}
 }
 
 func main() {
+	globalState.Initialize()
 	r := mux.NewRouter()
 	r.HandleFunc("/api/v1/game", gamePostHandler).Methods("POST")
 	log.Fatal(http.ListenAndServe(":8080", r))
