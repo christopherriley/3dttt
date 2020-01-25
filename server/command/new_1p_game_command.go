@@ -58,7 +58,7 @@ func (ngc New1PGameCommand) Execute(s *state.GlobalState) (Response, error) {
 		game = engine.NewGame(engine.Red)
 	}
 
-	s.AddGame(id, &game)
+	s.Add1PGame(id, ngc.humanColour, &game)
 	r := CreateResponse()
 	r.Add("id", id)
 

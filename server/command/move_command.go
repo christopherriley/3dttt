@@ -36,29 +36,30 @@ func (mc *MoveCommand) Create(p Params) error {
 }
 
 func (mc MoveCommand) Execute(s *state.GlobalState) (Response, error) {
-	var game *engine.Game
+	var state1P *state.GameState1P
 	var err error
 
-	if game, err = s.FetchGame(mc.id); err != nil {
+	if state1P, err = s.Fetch1PGame(mc.id); err != nil {
 		return Response{}, err
 	}
 
 	r := CreateResponse()
+	gameState := state1P.Game.GetGameState()
 
-	if err = game.Move(mc.peg); err != nil {
+	if err = state1P.Game.Move(mc.peg); err != nil {
 		r.Add("move_status", "invalid")
 	} else {
 		r.Add("move_status", "accepted")
 	}
 
-	state := game.GetGameState()
 	var stateStr string
-	if stateStr, err = engine.BoardStateToString(state.BoardState); err != nil {
+	gameState = state1P.Game.GetGameState()
+	if stateStr, err = engine.BoardStateToString(gameState.BoardState); err != nil {
 		return *r, err
 	}
 	r.Add("game_state", stateStr)
-	r.Add("red_score", fmt.Sprintf("%d", state.RedLines))
-	r.Add("blue_score", fmt.Sprintf("%d", state.BlueLines))
+	r.Add("red_score", fmt.Sprintf("%d", gameState.RedLines))
+	r.Add("blue_score", fmt.Sprintf("%d", gameState.BlueLines))
 
 	return *r, nil
 }
