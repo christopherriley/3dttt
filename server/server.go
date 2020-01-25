@@ -40,20 +40,27 @@ func gamePostHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	var paramsMap map[string]interface{}
+	var ok bool
+	if paramsMap, ok = gr.CommandParams.(map[string]interface{}); !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("{\"error\": \"failed to extract command parameters\"}"))
+	}
+	params := command.CreateParams(paramsMap)
 	var cmd command.Command
-	if cmd, err = command.CreateCommand(gr.CommandName, gr.CommandParams.(map[string]interface{})); err != nil {
+	if cmd, err = command.CreateCommand(gr.CommandName, params); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to create command: %s\"}\n", err)))
 		return
 	}
 
-	var cr command.CommandResponse
-	if cr, err = cmd.Execute(&globalState); err != nil {
+	var r command.Response
+	if r, err = cmd.Execute(&globalState); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to execute command: %s\"}\n", err)))
 	}
 
-	w.Write([]byte(cr.String()))
+	w.Write([]byte(r.String()))
 }
 
 func main() {

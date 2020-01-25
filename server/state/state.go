@@ -1,6 +1,8 @@
 package state
 
 import (
+	"fmt"
+
 	"github.com/christopherriley/3dttt/engine"
 )
 
@@ -14,4 +16,15 @@ func (state *GlobalState) Initialize() {
 
 func (state *GlobalState) AddGame(guid string, g *engine.Game) {
 	state.gameMap[guid] = g
+}
+
+func (state GlobalState) FetchGame(guid string) (*engine.Game, error) {
+	var game *engine.Game
+	var found bool
+
+	if game, found = state.gameMap[guid]; !found {
+		return nil, fmt.Errorf("game with id '%s' not found", guid)
+	}
+
+	return game, nil
 }

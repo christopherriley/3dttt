@@ -14,16 +14,18 @@ type NewGameCommand struct {
 	humanFirst  bool
 }
 
-func (ngc *NewGameCommand) Create(params map[string]interface{}) error {
+func (ngc *NewGameCommand) Create(p Params) error {
 	var playerColourStr, playerFirstStr string
-	var ok bool
+	var err error
 
-	playerColourStr, ok = params["colour"].(string)
-	if !ok {
-		return fmt.Errorf("parameter 'colour' missing")
+	if playerColourStr, err = p.Get("colour"); err != nil {
+		return err
 	}
-	pc := strings.ToUpper(playerColourStr)
-	switch pc {
+	if playerFirstStr, err = p.Get("move_first"); err != nil {
+		return err
+	}
+
+	switch playerColourStr {
 	case "RED":
 		ngc.humanColour = engine.Red
 	case "BLUE":
@@ -32,12 +34,7 @@ func (ngc *NewGameCommand) Create(params map[string]interface{}) error {
 		return fmt.Errorf("unknown value '%s' for key 'colour'", playerColourStr)
 	}
 
-	playerFirstStr, ok = params["move_first"].(string)
-	if !ok {
-		return fmt.Errorf("parameter 'move_first' missing")
-	}
-	pf := strings.ToUpper(playerFirstStr)
-	switch pf {
+	switch playerFirstStr {
 	case "TRUE":
 		ngc.humanFirst = true
 	case "FALSE":
@@ -49,9 +46,9 @@ func (ngc *NewGameCommand) Create(params map[string]interface{}) error {
 	return nil
 }
 
-func (ngc NewGameCommand) Execute(s *state.GlobalState) (CommandResponse, error) {
+func (ngc NewGameCommand) Execute(s *state.GlobalState) (Response, error) {
 	var game engine.Game
-	id := ksuid.New()
+	id := strings.ToUpper(ksuid.New().String())
 
 	if ngc.humanFirst {
 		game = engine.NewGame(ngc.humanColour)
@@ -61,9 +58,9 @@ func (ngc NewGameCommand) Execute(s *state.GlobalState) (CommandResponse, error)
 		game = engine.NewGame(engine.Red)
 	}
 
-	s.AddGame(id.String(), &game)
-	cr := CreateCommandResponse()
-	cr.Add("id", id.String())
+	s.AddGame(id, &game)
+	r := CreateResponse()
+	r.Add("id", id)
 
-	return *cr, nil
+	return *r, nil
 }

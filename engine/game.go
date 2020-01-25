@@ -1,5 +1,7 @@
 package engine
 
+import "fmt"
+
 type BoardState int
 
 const (
@@ -9,6 +11,23 @@ const (
 	BlueWins
 	Draw
 )
+
+func BoardStateToString(b BoardState) (string, error) {
+	switch b {
+	case RedToMove:
+		return "RedToMove", nil
+	case BlueToMove:
+		return "BlueToMove", nil
+	case RedWins:
+		return "RedWins", nil
+	case BlueWins:
+		return "BlueWins", nil
+	case Draw:
+		return "Draw", nil
+	default:
+		return "", fmt.Errorf("unknown board state '%d'", b)
+	}
+}
 
 type GameState struct {
 	RedLines   int
