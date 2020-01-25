@@ -24,13 +24,12 @@ type newGameCommand struct {
 var globalState state.GlobalState
 
 func gamePostHandler(w http.ResponseWriter, req *http.Request) {
-	fmt.Println(req.Method)
-	fmt.Println("POST handler")
 	var gr gameRequest
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&gr)
 	if err != nil {
-		fmt.Println("ERROR: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to decode request: %s\"}\n", err)))
 		return
 	}
 

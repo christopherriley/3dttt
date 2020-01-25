@@ -11,7 +11,6 @@ type Command interface {
 }
 
 func CreateCommand(name string, p Params) (Command, error) {
-	fmt.Println("name:", name)
 	switch name {
 	case "newgame_1p":
 		var ngc New1PGameCommand
