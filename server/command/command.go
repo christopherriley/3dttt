@@ -24,6 +24,12 @@ func CreateCommand(name string, p Params) (Command, error) {
 			return nil, err
 		}
 		return mc, nil
+	case "cpu_move":
+		var mc CPUMoveCommand
+		if err := mc.Create(p); err != nil {
+			return nil, err
+		}
+		return mc, nil
 	default:
 		return nil, fmt.Errorf("unknown command: '%s'", name)
 	}

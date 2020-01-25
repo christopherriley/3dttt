@@ -9,6 +9,7 @@ import (
 type GameState1P struct {
 	Game         *engine.Game
 	PlayerColour engine.Colour
+	CPUColour    engine.Colour
 }
 
 type GlobalState struct {
@@ -23,6 +24,11 @@ func (state *GlobalState) Add1PGame(guid string, playerColour engine.Colour, g *
 	var state1P GameState1P
 	state1P.Game = g
 	state1P.PlayerColour = playerColour
+	if playerColour == engine.Red {
+		state1P.CPUColour = engine.Blue
+	} else {
+		state1P.CPUColour = engine.Red
+	}
 	state.gameMap1P[guid] = &state1P
 }
 
