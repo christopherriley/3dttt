@@ -28,7 +28,7 @@ func newGameHandler(params map[string]interface{}) error {
 	}
 	playerFirstStr, ok = params["move_first"].(string)
 	if !ok {
-		return fmt.Errorf("prameter 'move_first' missing")
+		return fmt.Errorf("parameter 'move_first' missing")
 	}
 
 	fmt.Println("new game handler: colour:", playerColourStr, ", first:", playerFirstStr)
