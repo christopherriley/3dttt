@@ -45,6 +45,14 @@ func (mc MoveCommand) Execute(s *state.GlobalState) (Response, error) {
 
 	r := CreateResponse()
 	gameState := state1P.Game.GetGameState()
+	if gameState.BoardState == engine.Draw ||
+		gameState.BoardState == engine.RedWins ||
+		gameState.BoardState == engine.BlueWins {
+		return Response{}, fmt.Errorf("invalid move - game is over")
+	} else if gameState.BoardState == engine.RedToMove && state1P.PlayerColour == engine.Blue ||
+		gameState.BoardState == engine.BlueToMove && state1P.PlayerColour == engine.Red {
+		return Response{}, fmt.Errorf("invalid move - not human player turn")
+	}
 
 	if err = state1P.Game.Move(mc.peg); err != nil {
 		r.Add("move_status", "invalid")
