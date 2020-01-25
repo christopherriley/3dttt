@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/christopherriley/3dttt/server/command"
 	"github.com/gorilla/mux"
 )
 
@@ -19,23 +20,6 @@ type newGameCommand struct {
 	PlayerMoveFirst string `json:"move_first"`
 }
 
-func newGameHandler(params map[string]interface{}) error {
-	var playerColourStr, playerFirstStr string
-	var ok bool
-	playerColourStr, ok = params["colour"].(string)
-	if !ok {
-		return fmt.Errorf("parameter 'colour' missing")
-	}
-	playerFirstStr, ok = params["move_first"].(string)
-	if !ok {
-		return fmt.Errorf("parameter 'move_first' missing")
-	}
-
-	fmt.Println("new game handler: colour:", playerColourStr, ", first:", playerFirstStr)
-
-	return nil
-}
-
 func gamePostHandler(w http.ResponseWriter, req *http.Request) {
 	fmt.Println(req.Method)
 	fmt.Println("POST handler")
@@ -47,17 +31,20 @@ func gamePostHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	switch gr.CommandName {
-	case "newgame":
-		params := gr.CommandParams.(map[string]interface{})
-		if err := newGameHandler(params); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf("{\"error\": \"%s\"}\n", err)))
-		}
-	default:
+	if len(gr.CommandName) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf("{\"error\": \"command '%s' not found\"}\n", gr.CommandName)))
+		w.Write([]byte(fmt.Sprintf("{\"error\": \"missing command name\"}\n")))
+		return
 	}
+
+	var cmd command.Command
+	if cmd, err = command.CreateCommand(gr.CommandName, gr.CommandParams.(map[string]interface{})); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to create command: %s\"}\n", err)))
+		return
+	}
+
+	cmd.Execute()
 
 	w.Header().Set("Content-Type", "application/json")
 }
