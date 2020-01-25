@@ -13,8 +13,8 @@ type Command interface {
 func CreateCommand(name string, p Params) (Command, error) {
 	fmt.Println("name:", name)
 	switch name {
-	case "newgame":
-		var ngc NewGameCommand
+	case "newgame_1p":
+		var ngc New1PGameCommand
 		if err := ngc.Create(p); err != nil {
 			return nil, err
 		}

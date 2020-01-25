@@ -9,12 +9,12 @@ import (
 	"github.com/segmentio/ksuid"
 )
 
-type NewGameCommand struct {
+type New1PGameCommand struct {
 	humanColour engine.Colour
 	humanFirst  bool
 }
 
-func (ngc *NewGameCommand) Create(p Params) error {
+func (ngc *New1PGameCommand) Create(p Params) error {
 	var playerColourStr, playerFirstStr string
 	var err error
 
@@ -46,7 +46,7 @@ func (ngc *NewGameCommand) Create(p Params) error {
 	return nil
 }
 
-func (ngc NewGameCommand) Execute(s *state.GlobalState) (Response, error) {
+func (ngc New1PGameCommand) Execute(s *state.GlobalState) (Response, error) {
 	var game engine.Game
 	id := strings.ToUpper(ksuid.New().String())
 
