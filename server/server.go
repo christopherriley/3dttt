@@ -47,10 +47,13 @@ func gamePostHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err := cmd.Execute(&globalState, w); err != nil {
+	var cr command.CommandResponse
+	if cr, err = cmd.Execute(&globalState); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to execute command: %s\"}\n", err)))
 	}
+
+	w.Write([]byte(cr.String()))
 }
 
 func main() {

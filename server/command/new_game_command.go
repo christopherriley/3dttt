@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/christopherriley/3dttt/engine"
@@ -50,7 +49,7 @@ func (ngc *NewGameCommand) Create(params map[string]interface{}) error {
 	return nil
 }
 
-func (ngc NewGameCommand) Execute(s *state.GlobalState, w http.ResponseWriter) error {
+func (ngc NewGameCommand) Execute(s *state.GlobalState) (CommandResponse, error) {
 	var game engine.Game
 	id := ksuid.New()
 
@@ -63,8 +62,8 @@ func (ngc NewGameCommand) Execute(s *state.GlobalState, w http.ResponseWriter) e
 	}
 
 	s.AddGame(id.String(), &game)
+	cr := CreateCommandResponse()
+	cr.Add("id", id.String())
 
-	w.Write([]byte(fmt.Sprintf("{\"id\": \"%s\"}\n", id.String())))
-
-	return nil
+	return *cr, nil
 }
