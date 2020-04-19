@@ -1,76 +1,41 @@
 import React, { Component} from "react"
 import {hot} from "react-hot-loader"
 import "./App.css"
+import {ColourPicker, Colour} from "./ColourPicker.js"
+import {MoveFirstPicker} from "./MoveFirstPicker.js"
+import {Game} from "./Game.js"
 
-const Colour = {
-  Red: 1,
-  Blue: 2
-}
-
-function ColourSelectSquare(props) {
-  return (
-    <button className="colour-select-square" onClick={props.onClick}>
-      {props.value}
-    </button>
-  )
-}
-
-function MoveSelectSquare(props) {
-  return (
-    <button className="move-select-square" onClick={props.onClick}>
-      {props.value}
-    </button>
-  )
-}
 
 class App extends Component{
   constructor(props) {
     super(props)
     this.state = {
       playerColour: null,
+      nextMoveColour: null,
       moveFirst: null,
     }
   }
 
-  renderColourPicker() {
-    return(
-      <div className="App">
-      <h1>Please select your colour</h1>
-      <ColourSelectSquare
-        value="Red"
-        onClick={() => this.handleColourClick("red")}
-      />
-      <ColourSelectSquare
-        value="Blue"
-        onClick={() => this.handleColourClick("blue")}
-      />
-    </div>
-    )
-  }
 
   renderMoveFirstPicker() {
     return(
-      <div className="App">
-        <h1>Would you like to go first?</h1>
-        <MoveSelectSquare
-        value="Yes"
-        onClick={() => this.handleMoveFirstClick("yes")}
-      />
-        <MoveSelectSquare
-        value="No"
-        onClick={() => this.handleMoveFirstClick("no")}
-      />
-      </div>
+      <MoveFirstPicker cb={moveFirst => this.handleMoveFirstClick(moveFirst)}/>
     )
   }
 
   renderGame() {
-    return(
-      <h1>suuuuup</h1>
+    return (
+      <Game cb={move => this.handleMoveClick(move)}/>
     )
   }
 
-  render(){
+  renderColourPicker() {
+    return (
+      <ColourPicker cb={colour => this.handleColourClick(colour)}/>
+    )
+  }
+
+  render() {
     console.log("App.render()")
     if (this.state.playerColour == null) {
       return this.renderColourPicker()
@@ -81,16 +46,21 @@ class App extends Component{
     }
   }
 
-  handleColourClick(colour){
+  handleColourClick(colour) {
     console.log("colour selected: " + colour)
     this.state.playerColour = (colour == "red" ? Colour.Red : Colour.Blue)
     this.setState(this.state)
   }
 
-  handleMoveFirstClick(moveFirst){
+  handleMoveFirstClick(moveFirst) {
     console.log("move first: " + moveFirst)
     this.state.moveFirst = (moveFirst == "yes" ? true : false)
+    this.state.nextMoveColour = (this.state.moveFirst ? this.state.playerColour : (this.state.playerColour == Colour.Red ? Colour.Blue : Colour.Red))
     this.setState(this.state)
+  }
+
+  handleMoveClick(peg) {
+    console.log("move: " + peg)
   }
 }
 
