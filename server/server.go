@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -21,9 +21,18 @@ type newGameCommand struct {
 	PlayerMoveFirst string `json:"move_first"`
 }
 
-var globalState state.GlobalState
+type GameServer struct {
+	state state.GlobalState
+}
 
-func gamePostHandler(w http.ResponseWriter, req *http.Request) {
+func (gs GameServer) Start(listenPort int) {
+	gs.state.Initialize()
+	r := mux.NewRouter()
+	r.HandleFunc("/api/v1/game", gs.gamePostHandler).Methods("POST")
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", listenPort), r))
+}
+
+func (gs GameServer) gamePostHandler(w http.ResponseWriter, req *http.Request) {
 	var gr gameRequest
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&gr)
@@ -54,17 +63,10 @@ func gamePostHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	var r command.Response
-	if r, err = cmd.Execute(&globalState); err != nil {
+	if r, err = cmd.Execute(&gs.state); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to execute command: %s\"}\n", err)))
 	}
 
 	w.Write([]byte(r.String()))
-}
-
-func main() {
-	globalState.Initialize()
-	r := mux.NewRouter()
-	r.HandleFunc("/api/v1/game", gamePostHandler).Methods("POST")
-	log.Fatal(http.ListenAndServe(":8080", r))
 }

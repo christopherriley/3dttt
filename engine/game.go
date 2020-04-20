@@ -1,9 +1,38 @@
 package engine
 
+import "fmt"
+
+type NextMove int
+
+const (
+	RedToMove NextMove = iota
+	BlueToMove
+	RedWins
+	BlueWins
+	Draw
+)
+
+func NextMoveToString(b NextMove) (string, error) {
+	switch b {
+	case RedToMove:
+		return "RedToMove", nil
+	case BlueToMove:
+		return "BlueToMove", nil
+	case RedWins:
+		return "RedWins", nil
+	case BlueWins:
+		return "BlueWins", nil
+	case Draw:
+		return "Draw", nil
+	default:
+		return "", fmt.Errorf("unknown NextMove '%d'", b)
+	}
+}
+
 type GameState struct {
-	RedLines   int
-	BlueLines  int
-	BoardState BoardState
+	RedLines  int
+	BlueLines int
+	NextMove  NextMove
 }
 
 type Game struct {
@@ -30,16 +59,16 @@ func (g Game) GetGameState() GameState {
 
 	if g.board.IsFull() {
 		if state.RedLines > state.BlueLines {
-			state.BoardState = RedWins
+			state.NextMove = RedWins
 		} else if state.BlueLines > state.RedLines {
-			state.BoardState = BlueWins
+			state.NextMove = BlueWins
 		} else {
-			state.BoardState = Draw
+			state.NextMove = Draw
 		}
 	} else if g.nextMove == Red {
-		state.BoardState = RedToMove
+		state.NextMove = RedToMove
 	} else {
-		state.BoardState = BlueToMove
+		state.NextMove = BlueToMove
 	}
 
 	return state

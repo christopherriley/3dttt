@@ -46,33 +46,6 @@ type Board struct {
 	Peg [8]Peg
 }
 
-type BoardState int
-
-const (
-	RedToMove BoardState = iota
-	BlueToMove
-	RedWins
-	BlueWins
-	Draw
-)
-
-func BoardStateToString(b BoardState) (string, error) {
-	switch b {
-	case RedToMove:
-		return "RedToMove", nil
-	case BlueToMove:
-		return "BlueToMove", nil
-	case RedWins:
-		return "RedWins", nil
-	case BlueWins:
-		return "BlueWins", nil
-	case Draw:
-		return "Draw", nil
-	default:
-		return "", fmt.Errorf("unknown board state '%d'", b)
-	}
-}
-
 func StringToPeg(s string) (PegLabel, error) {
 	switch s[0] {
 	case 'A':

@@ -22,7 +22,7 @@ var _ = Describe("Game Tests", func() {
 			Expect(subject.GetGameState().RedLines).To(Equal(0))
 		})
 		It("is red's turn", func() {
-			Expect(subject.GetGameState().BoardState).To(Equal(engine.RedToMove))
+			Expect(subject.GetGameState().NextMove).To(Equal(engine.RedToMove))
 		})
 	})
 
@@ -41,7 +41,7 @@ var _ = Describe("Game Tests", func() {
 			Expect(subject.GetGameState().RedLines).To(Equal(2))
 		})
 		It("has blue as winner", func() {
-			Expect(subject.GetGameState().BoardState).To(Equal(engine.BlueWins))
+			Expect(subject.GetGameState().NextMove).To(Equal(engine.BlueWins))
 		})
 	})
 
@@ -60,7 +60,7 @@ var _ = Describe("Game Tests", func() {
 			Expect(subject.GetGameState().RedLines).To(Equal(2))
 		})
 		It("is blue's turn", func() {
-			Expect(subject.GetGameState().BoardState).To(Equal(engine.BlueToMove))
+			Expect(subject.GetGameState().NextMove).To(Equal(engine.BlueToMove))
 		})
 	})
 })

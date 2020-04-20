@@ -37,12 +37,12 @@ func (mc CPUMoveCommand) Execute(s *state.GlobalState) (Response, error) {
 
 	r := CreateResponse()
 	gameState := state1P.Game.GetGameState()
-	if gameState.BoardState == engine.Draw ||
-		gameState.BoardState == engine.RedWins ||
-		gameState.BoardState == engine.BlueWins {
+	if gameState.NextMove == engine.Draw ||
+		gameState.NextMove == engine.RedWins ||
+		gameState.NextMove == engine.BlueWins {
 		return Response{}, fmt.Errorf("invalid move - game is over")
-	} else if gameState.BoardState == engine.RedToMove && state1P.PlayerColour == engine.Red ||
-		gameState.BoardState == engine.BlueToMove && state1P.PlayerColour == engine.Blue {
+	} else if gameState.NextMove == engine.RedToMove && state1P.PlayerColour == engine.Red ||
+		gameState.NextMove == engine.BlueToMove && state1P.PlayerColour == engine.Blue {
 		return Response{}, fmt.Errorf("invalid move - not cpu player turn")
 	}
 
@@ -55,7 +55,7 @@ func (mc CPUMoveCommand) Execute(s *state.GlobalState) (Response, error) {
 
 	var stateStr string
 	gameState = state1P.Game.GetGameState()
-	if stateStr, err = engine.BoardStateToString(gameState.BoardState); err != nil {
+	if stateStr, err = engine.NextMoveToString(gameState.NextMove); err != nil {
 		return *r, err
 	}
 	r.Add("cpu_move", engine.PegToString(move))
