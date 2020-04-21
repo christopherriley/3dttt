@@ -48,18 +48,21 @@ func (ngc *New1PGameCommand) Create(p Params) error {
 
 func (ngc New1PGameCommand) Execute(s *state.GlobalState) (Response, error) {
 	var game engine.Game
+	var firstPlayer engine.Colour
 	id := strings.ToUpper(ksuid.New().String())
 
 	if ngc.humanFirst {
-		game = engine.NewGame(ngc.humanColour)
+		firstPlayer = ngc.humanColour
 	} else if ngc.humanColour == engine.Red {
-		game = engine.NewGame(engine.Blue)
+		firstPlayer = engine.Blue
 	} else {
-		game = engine.NewGame(engine.Red)
+		firstPlayer = engine.Red
 	}
 
+	game = engine.NewGame(firstPlayer)
+
 	s.Add1PGame(id, ngc.humanColour, &game)
-	r := CreateResponse()
+	r := CreateResponse(game.GetGameState().NextMove, 0, 0, game.GetBoard())
 	r.Add("id", id)
 
 	return *r, nil

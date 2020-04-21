@@ -1,23 +1,48 @@
 package command
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
 
-type Response struct {
-	responseMap map[string]string
+	engine "github.com/christopherriley/3dttt/engine"
+)
+
+type gameState struct {
+	NextMove   string       `json:"next_move"`
+	RedScore   int          `json:"red_score"`
+	BlueScore  int          `json:"blue_score"`
+	BoardState engine.Board `json:"board_state"`
 }
 
-func CreateResponse() *Response {
+type Response struct {
+	responseMap map[string]interface{}
+}
+
+func CreateResponse(nextMove engine.NextMove, redScore, blueScore int, board engine.Board) *Response {
 	var r Response
-	r.responseMap = make(map[string]string)
+	r.responseMap = make(map[string]interface{})
+
+	nextMoveStr, _ := engine.NextMoveToString(nextMove)
+
+	r.Add("state", gameState{
+		NextMove:   nextMoveStr,
+		RedScore:   redScore,
+		BlueScore:  blueScore,
+		BoardState: board,
+	})
 
 	return &r
 }
 
-func (r *Response) Add(key, value string) {
+func (r *Response) Add(key string, value interface{}) {
 	r.responseMap[key] = value
 }
 
 func (r Response) String() string {
-	j, _ := json.Marshal(r.responseMap)
+	j, err := json.Marshal(r.responseMap)
+	if err != nil {
+		fmt.Printf("encountered error: %s", err)
+		return "ERROR"
+	}
 	return string(j)
 }

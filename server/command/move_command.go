@@ -43,8 +43,8 @@ func (mc MoveCommand) Execute(s *state.GlobalState) (Response, error) {
 		return Response{}, err
 	}
 
-	r := CreateResponse()
 	gameState := state1P.Game.GetGameState()
+
 	if gameState.NextMove == engine.Draw ||
 		gameState.NextMove == engine.RedWins ||
 		gameState.NextMove == engine.BlueWins {
@@ -54,20 +54,14 @@ func (mc MoveCommand) Execute(s *state.GlobalState) (Response, error) {
 		return Response{}, fmt.Errorf("invalid move - not human player turn")
 	}
 
+	moveStatus := "accepted"
+	var r *Response
 	if err = state1P.Game.Move(mc.peg); err != nil {
-		r.Add("move_status", "invalid")
-	} else {
-		r.Add("move_status", "accepted")
+		moveStatus = "invalid"
 	}
 
-	var stateStr string
-	gameState = state1P.Game.GetGameState()
-	if stateStr, err = engine.NextMoveToString(gameState.NextMove); err != nil {
-		return *r, err
-	}
-	r.Add("game_state", stateStr)
-	r.Add("red_score", fmt.Sprintf("%d", gameState.RedLines))
-	r.Add("blue_score", fmt.Sprintf("%d", gameState.BlueLines))
+	r = CreateResponse(state1P.Game.GetGameState().NextMove, 0, 0, state1P.Game.GetBoard())
+	r.Add("move_status", moveStatus)
 
 	return *r, nil
 }

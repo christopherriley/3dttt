@@ -68,5 +68,6 @@ func (gs GameServer) gamePostHandler(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to execute command: %s\"}\n", err)))
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(r.String()))
 }

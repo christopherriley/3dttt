@@ -35,8 +35,8 @@ func (mc CPUMoveCommand) Execute(s *state.GlobalState) (Response, error) {
 		return Response{}, err
 	}
 
-	r := CreateResponse()
 	gameState := state1P.Game.GetGameState()
+
 	if gameState.NextMove == engine.Draw ||
 		gameState.NextMove == engine.RedWins ||
 		gameState.NextMove == engine.BlueWins {
@@ -53,15 +53,8 @@ func (mc CPUMoveCommand) Execute(s *state.GlobalState) (Response, error) {
 		os.Exit(1)
 	}
 
-	var stateStr string
-	gameState = state1P.Game.GetGameState()
-	if stateStr, err = engine.NextMoveToString(gameState.NextMove); err != nil {
-		return *r, err
-	}
+	r := CreateResponse(state1P.Game.GetGameState().NextMove, 0, 0, state1P.Game.GetBoard())
 	r.Add("cpu_move", engine.PegToString(move))
-	r.Add("game_state", stateStr)
-	r.Add("red_score", fmt.Sprintf("%d", gameState.RedLines))
-	r.Add("blue_score", fmt.Sprintf("%d", gameState.BlueLines))
 
 	return *r, nil
 }
