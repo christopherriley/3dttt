@@ -35,6 +35,34 @@ type moveResponse struct {
 	State      gameState `json:"state"`
 }
 
+type cpuMoveResponse struct {
+	CPUMove string    `json:"cpu_move"`
+	State   gameState `json:"state"`
+}
+
+func pegLetterToIndex(s string) int {
+	switch s {
+	case "A":
+		return 0
+	case "B":
+		return 1
+	case "C":
+		return 2
+	case "D":
+		return 3
+	case "E":
+		return 4
+	case "F":
+		return 5
+	case "G":
+		return 6
+	case "H":
+		return 7
+	}
+
+	return -1
+}
+
 func post(url string, command string, params commandParams) (responseStatusCode int, responseBodyBytes []byte, err error) {
 	requestBodyBytes, marshalErr := json.Marshal(commandParams{
 		"command": command,
@@ -170,8 +198,6 @@ var _ = Describe("Game Server Tests", func() {
 			})
 
 			Describe("with new game, player to move", func() {
-				var gameId string
-
 				BeforeEach(func() {
 					newGameParams := commandParams{}
 					newGameParams["colour"] = "red"
@@ -190,11 +216,7 @@ var _ = Describe("Game Server Tests", func() {
 						log.Fatalln(unmarshalErr)
 					}
 
-					gameId = response.Id
-				})
-
-				BeforeEach(func() {
-					params["id"] = gameId
+					params["id"] = response.Id
 					params["peg"] = "A"
 				})
 
@@ -235,6 +257,63 @@ var _ = Describe("Game Server Tests", func() {
 					}))
 					Expect(response.State.BoardState.Peg[7]).To(Equal(engine.Peg{
 						Slot: [3]engine.Colour{engine.None, engine.None, engine.None},
+					}))
+				})
+			})
+		})
+
+		Describe("CPU Move command", func() {
+			var response cpuMoveResponse
+
+			BeforeEach(func() {
+				command = "cpu_move"
+			})
+
+			JustBeforeEach(func() {
+				unmarshalErr := json.Unmarshal(bodyBytes, &response)
+				if unmarshalErr != nil {
+					log.Fatalln(unmarshalErr)
+				}
+			})
+
+			Describe("with new game, cpu to move", func() {
+				BeforeEach(func() {
+					newGameParams := commandParams{}
+					newGameParams["colour"] = "red"
+					newGameParams["move_first"] = "FALSE"
+					statusCode, bodyBytes, err := post(url, "newgame_1p", newGameParams)
+					if err != nil {
+						log.Fatalln(err)
+					}
+					if statusCode != 200 {
+						log.Fatalln("failed to create new game")
+					}
+
+					var response newGameResponse
+					unmarshalErr := json.Unmarshal(bodyBytes, &response)
+					if unmarshalErr != nil {
+						log.Fatalln(unmarshalErr)
+					}
+
+					params["id"] = response.Id
+				})
+
+				It("succeeds", func() {
+					Expect(responseStatusCode).To(Equal(200))
+				})
+				It("returns a CPU move", func() {
+					Expect(response.CPUMove).ToNot(BeEmpty())
+				})
+				It("expects Blue to move next", func() {
+					Expect(response.State.NextMove).To(Equal("RedToMove"))
+				})
+				It("reports a score of 0-0", func() {
+					Expect(response.State.RedScore).To(BeZero())
+					Expect(response.State.BlueScore).To(BeZero())
+				})
+				It("reports a game board with one red peg", func() {
+					Expect(response.State.BoardState.Peg[pegLetterToIndex(response.CPUMove)]).To(Equal(engine.Peg{
+						Slot: [3]engine.Colour{engine.Blue, engine.None, engine.None},
 					}))
 				})
 			})
