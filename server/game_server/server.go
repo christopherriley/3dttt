@@ -1,4 +1,4 @@
-package server
+package game_server
 
 import (
 	"encoding/json"
@@ -69,5 +69,6 @@ func (gs GameServer) gamePostHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write([]byte(r.String()))
 }

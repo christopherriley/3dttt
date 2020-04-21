@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/christopherriley/3dttt/engine"
-	"github.com/christopherriley/3dttt/server"
+	"github.com/christopherriley/3dttt/server/game_server"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -101,7 +101,7 @@ func post(url string, command string, params commandParams) (responseStatusCode 
 }
 
 var _ = Describe("Game Server Tests", func() {
-	var subject server.GameServer
+	var subject game_server.GameServer
 	var command string
 	var params commandParams
 	var responseStatusCode int
