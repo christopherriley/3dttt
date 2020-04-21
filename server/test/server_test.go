@@ -88,8 +88,41 @@ var _ = Describe("Game Server Tests", func() {
 				It("succeeds", func() {
 					Expect(responseStatusCode).To(Equal(200))
 				})
+				It("returns a game ID", func() {
+					Expect(response.Id).ToNot(BeEmpty())
+				})
 				It("sets next move to RedToMove", func() {
 					Expect(response.State.NextMove).To(Equal("RedToMove"))
+				})
+				It("reports a score of 0-0", func() {
+					Expect(response.State.RedScore).To(BeZero())
+					Expect(response.State.BlueScore).To(BeZero())
+				})
+				It("reports an empty game board", func() {
+					Expect(response.State.BoardState.Peg[0]).To(Equal(engine.Peg{
+						Slot: [3]engine.Colour{engine.None, engine.None, engine.None},
+					}))
+					Expect(response.State.BoardState.Peg[1]).To(Equal(engine.Peg{
+						Slot: [3]engine.Colour{engine.None, engine.None, engine.None},
+					}))
+					Expect(response.State.BoardState.Peg[2]).To(Equal(engine.Peg{
+						Slot: [3]engine.Colour{engine.None, engine.None, engine.None},
+					}))
+					Expect(response.State.BoardState.Peg[3]).To(Equal(engine.Peg{
+						Slot: [3]engine.Colour{engine.None, engine.None, engine.None},
+					}))
+					Expect(response.State.BoardState.Peg[4]).To(Equal(engine.Peg{
+						Slot: [3]engine.Colour{engine.None, engine.None, engine.None},
+					}))
+					Expect(response.State.BoardState.Peg[5]).To(Equal(engine.Peg{
+						Slot: [3]engine.Colour{engine.None, engine.None, engine.None},
+					}))
+					Expect(response.State.BoardState.Peg[6]).To(Equal(engine.Peg{
+						Slot: [3]engine.Colour{engine.None, engine.None, engine.None},
+					}))
+					Expect(response.State.BoardState.Peg[7]).To(Equal(engine.Peg{
+						Slot: [3]engine.Colour{engine.None, engine.None, engine.None},
+					}))
 				})
 			})
 		})
