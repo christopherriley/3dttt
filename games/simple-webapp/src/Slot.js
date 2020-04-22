@@ -1,4 +1,4 @@
-import React, { Component} from "react"
+import React, { Component } from "react"
 
 const styles = {
     slot: {
@@ -24,4 +24,4 @@ class Slot extends Component {
     }
 }
 
-export {Slot}
+export { Slot }
