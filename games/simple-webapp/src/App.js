@@ -17,6 +17,7 @@ class App extends Component{
       playerColour: null,
       nextAction: NextAction.START_NEW_GAME,
       moveFirst: null,
+      boardState: null,
     }
   }
 
@@ -33,6 +34,7 @@ class App extends Component{
         action={this.state.nextAction}
         colour={this.state.playerColour}
         move_first={this.state.moveFirst}
+        board_state={this.state.boardState}
         cb={actionResult => this.handleActionResult(actionResult)}/>
     )
   }
@@ -80,6 +82,8 @@ class App extends Component{
           this.state.nextAction = NextAction.CPU_TO_MOVE
           console.log("changing state to: NextAction.CPU_TO_MOVE")
         }
+
+        this.state.boardState = actionResult.boardState
 
         this.setState(this.state)
       }

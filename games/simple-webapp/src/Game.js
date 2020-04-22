@@ -1,5 +1,7 @@
 import React, { Component} from "react"
 
+import {Board} from "./Board.js"
+
 
 const NextAction = {
     START_NEW_GAME: 1,
@@ -26,7 +28,8 @@ class Game extends Component {
                     var jsonResponse = JSON.parse(xhttp.responseText)
                     that.props.cb({
                         status: ActionResultStatus.SUCCESS,
-                        nextMove: jsonResponse.state.next_move
+                        nextMove: jsonResponse.state.next_move,
+                        boardState: jsonResponse.state.board_state
                     })
                 }
             }
@@ -50,13 +53,23 @@ class Game extends Component {
             )
         }
         else if (this.props.action == NextAction.PLAYER_TO_MOVE) {
-            return(
-                <h1>Player to move</h1>
+            return (
+                <div>
+                    <h1>Player to move</h1>
+                    <Board
+                        state={this.props.board_state}
+                    />
+                </div>
             )
         }
         else if (this.props.action == NextAction.CPU_TO_MOVE) {
             return(
-                <h1>CPU to move</h1>
+                <div>
+                    <h1>CPU to move</h1>
+                    <Board
+                        state={this.props.board_state}
+                    />
+                </div>
             )
         }
         else {
