@@ -3,15 +3,14 @@ import {hot} from "react-hot-loader"
 import "./App.css"
 import {ColourPicker, Colour} from "./ColourPicker.js"
 import {MoveFirstPicker} from "./MoveFirstPicker.js"
-import {Game} from "./Game.js"
-
+import {Game, NextAction} from "./Game.js"
 
 class App extends Component{
   constructor(props) {
     super(props)
     this.state = {
       playerColour: null,
-      nextMoveColour: null,
+      nextAction: NextAction.START_NEW_GAME,
       moveFirst: null,
     }
   }
@@ -23,9 +22,9 @@ class App extends Component{
     )
   }
 
-  renderGame() {
+  renderGame(nextAction) {
     return (
-      <Game cb={move => this.handleMoveClick(move)}/>
+      <Game action={nextAction} cb={move => this.handleMoveClick(move)}/>
     )
   }
 
@@ -42,7 +41,7 @@ class App extends Component{
     } else if (this.state.moveFirst == null) {
       return this.renderMoveFirstPicker()
     } else {
-      return this.renderGame()
+      return this.renderGame(this.state.nextAction)
     }
   }
 
