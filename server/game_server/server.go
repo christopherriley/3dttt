@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/christopherriley/3dttt/server/command"
 	"github.com/christopherriley/3dttt/server/state"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 type gameRequest struct {
@@ -27,9 +29,23 @@ type GameServer struct {
 
 func (gs GameServer) Start(listenPort int) {
 	gs.state.Initialize()
+
 	r := mux.NewRouter()
 	r.HandleFunc("/api/v1/game", gs.gamePostHandler).Methods("POST")
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", listenPort), r))
+
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS_3DTTT")
+	if len(allowedOrigins) == 0 {
+		fmt.Println("* warning: no CORS origins are set - clients may not be able to connect\n\nPlease set the ALLOWED_ORIGINS_3DTTT env var\n")
+	}
+	fmt.Println("allowed origins: ", allowedOrigins)
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{allowedOrigins},
+		AllowCredentials: true,
+	})
+
+	handler := c.Handler(r)
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", listenPort), handler))
 }
 
 func (gs GameServer) gamePostHandler(w http.ResponseWriter, req *http.Request) {
@@ -69,6 +85,5 @@ func (gs GameServer) gamePostHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write([]byte(r.String()))
 }
