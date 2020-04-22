@@ -2,11 +2,21 @@ import React, { Component} from "react"
 
 import {Slot} from "./Slot.js"
 
+const styles = {
+    pegDiv: {
+        display: 'inline-block',
+        border: '0px'
+    },
+    spacerDiv: {
+        display: 'inline-block'
+    }
+}
+
 class Peg extends Component {
     render() {
         if (this.props.value === undefined) {
             return (
-                <div style={{display: "inline-block"}}>
+                <div className="spacerDiv" style={styles.spacerDiv}>
                     <div><Slot/></div>
                     <div><Slot/></div>
                     <div><Slot/></div>
@@ -15,7 +25,7 @@ class Peg extends Component {
         }
         else {
             return (
-                <div style={{display: "inline-block"}}>
+                <div className="pegDiv" style={styles.pegDiv}>
                     <div><Slot value={this.props.value.Slot[2]}/></div>
                     <div><Slot value={this.props.value.Slot[1]}/></div>
                     <div><Slot value={this.props.value.Slot[0]}/></div>
