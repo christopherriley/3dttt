@@ -27,7 +27,7 @@ class Peg extends Component {
         }
         else {
             return (
-                <div className="pegDiv" style={styles.pegDiv}>
+                <div className="pegDiv" style={styles.pegDiv} onClick={() => this.props.cb(this.props.label)}>
                     <div><Slot value={this.props.value.Slot[2]}/></div>
                     <div><Slot value={this.props.value.Slot[1]}/></div>
                     <div><Slot value={this.props.value.Slot[0]}/></div>

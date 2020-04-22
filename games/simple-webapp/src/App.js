@@ -35,7 +35,9 @@ class App extends Component{
         colour={this.state.playerColour}
         move_first={this.state.moveFirst}
         board_state={this.state.boardState}
-        cb={actionResult => this.handleActionResult(actionResult)}/>
+        actionResultCb={actionResult => this.handleActionResult(actionResult)}
+        pegClickCb={peg => this.handlePegClick(peg)}
+      />
     )
   }
 
@@ -66,6 +68,10 @@ class App extends Component{
     this.state.moveFirst = (moveFirst == "yes" ? true : false)
     this.state.nextMoveColour = (this.state.moveFirst ? this.state.playerColour : (this.state.playerColour == Colour.Red ? Colour.Blue : Colour.Red))
     this.setState(this.state)
+  }
+
+  handlePegClick(peg) {
+    console.log("peg clicked: ", peg)
   }
 
   handleActionResult(actionResult) {

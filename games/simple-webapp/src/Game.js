@@ -26,7 +26,7 @@ class Game extends Component {
             if (this.readyState == 4) {
                 if (this.status == 200) {
                     var jsonResponse = JSON.parse(xhttp.responseText)
-                    that.props.cb({
+                    that.props.actionResultCb({
                         status: ActionResultStatus.SUCCESS,
                         nextMove: jsonResponse.state.next_move,
                         boardState: jsonResponse.state.board_state
@@ -58,6 +58,7 @@ class Game extends Component {
                     <h1>Player to move</h1>
                     <Board
                         value={this.props.board_state}
+                        cb={this.props.pegClickCb}
                     />
                 </div>
             )
@@ -68,6 +69,7 @@ class Game extends Component {
                     <h1>CPU to move</h1>
                     <Board
                         value={this.props.board_state}
+                        cb={this.props.pegClickCb}
                     />
                 </div>
             )
