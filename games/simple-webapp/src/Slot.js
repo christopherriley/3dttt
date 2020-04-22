@@ -1,6 +1,9 @@
 import React, { Component} from "react"
 
 const styles = {
+    slot: {
+        textAlign: 'center'
+    },
     slotHidden: {
         visibility: 'hidden'
     }
@@ -15,7 +18,7 @@ class Slot extends Component {
         }
         else {
             return (
-                <h3>{this.props.value}</h3>
+                <h3 className="slot" style={styles.slot}>{this.props.value}</h3>
             )
         }
     }

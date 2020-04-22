@@ -5,10 +5,12 @@ import {Slot} from "./Slot.js"
 const styles = {
     pegDiv: {
         display: 'inline-block',
-        border: '0px'
+        border: '1px solid black',
+        width: '20px'
     },
     spacerDiv: {
-        display: 'inline-block'
+        display: 'inline-block',
+        width: '20px'
     }
 }
 
