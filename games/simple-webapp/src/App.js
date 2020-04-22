@@ -3,7 +3,12 @@ import {hot} from "react-hot-loader"
 import "./App.css"
 import {ColourPicker, Colour} from "./ColourPicker.js"
 import {MoveFirstPicker} from "./MoveFirstPicker.js"
-import {Game, NextAction} from "./Game.js"
+import {Game, NextAction, ActionResultStatus} from "./Game.js"
+
+const NextMove = {
+  RED_TO_MOVE: "RedToMove",
+  BLUE_TO_MOVE: "BlueToMove"
+}
 
 class App extends Component{
   constructor(props) {
@@ -22,9 +27,13 @@ class App extends Component{
     )
   }
 
-  renderGame(nextAction) {
+  renderGame() {
     return (
-      <Game action={nextAction} cb={move => this.handleMoveClick(move)}/>
+      <Game
+        action={this.state.nextAction}
+        colour={this.state.playerColour}
+        move_first={this.state.moveFirst}
+        cb={actionResult => this.handleActionResult(actionResult)}/>
     )
   }
 
@@ -35,7 +44,6 @@ class App extends Component{
   }
 
   render() {
-    console.log("App.render()")
     if (this.state.playerColour == null) {
       return this.renderColourPicker()
     } else if (this.state.moveFirst == null) {
@@ -58,8 +66,24 @@ class App extends Component{
     this.setState(this.state)
   }
 
-  handleMoveClick(peg) {
-    console.log("move: " + peg)
+  handleActionResult(actionResult) {
+    if (actionResult.status = ActionResultStatus.SUCCESS) {
+      if (this.state.nextAction == NextAction.START_NEW_GAME) {
+        console.log("handleActionResult(): action was: NextAction.START_NEW_GAME, actionResult.NextMove: ", actionResult.nextMove)
+        if (actionResult.nextMove == NextMove.RED_TO_MOVE && this.state.playerColour == Colour.Red ||
+              actionResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Blue) {
+          this.state.nextAction = NextAction.PLAYER_TO_MOVE
+          console.log("changing state to: NextAction.PLAYER_TO_MOVE")
+        }
+        else if (actionResult.nextMove == NextMove.RED_TO_MOVE && this.state.playerColour == Colour.Blue ||
+                  actionResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Red) {
+          this.state.nextAction = NextAction.CPU_TO_MOVE
+          console.log("changing state to: NextAction.CPU_TO_MOVE")
+        }
+
+        this.setState(this.state)
+      }
+    }
   }
 }
 

@@ -1,8 +1,8 @@
 import React, { Component} from "react"
 
 const Colour = {
-    Red: 1,
-    Blue: 2
+    Red: "red",
+    Blue: "blue"
 }
 
 function ColourSelectSquare(props) {
