@@ -57,7 +57,7 @@ class Game extends Component {
                 <div>
                     <h1>Player to move</h1>
                     <Board
-                        state={this.props.board_state}
+                        value={this.props.board_state}
                     />
                 </div>
             )
@@ -67,7 +67,7 @@ class Game extends Component {
                 <div>
                     <h1>CPU to move</h1>
                     <Board
-                        state={this.props.board_state}
+                        value={this.props.board_state}
                     />
                 </div>
             )
