@@ -1,8 +1,8 @@
-import React, { Component} from "react"
+import React, { Component } from "react"
 
 const Colour = {
-    Red: "red",
-    Blue: "blue"
+    Red: 1,
+    Blue: 2
 }
 
 function ColourSelectSquare(props) {
@@ -15,7 +15,7 @@ function ColourSelectSquare(props) {
 
 class ColourPicker extends Component {
     render() {
-        return(
+        return (
             <div className="App">
                 <h1>Please select your colour</h1>
                 <ColourSelectSquare
@@ -31,4 +31,4 @@ class ColourPicker extends Component {
     }
 }
 
-export {ColourPicker, Colour}
+export { ColourPicker, Colour }

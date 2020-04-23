@@ -1,6 +1,8 @@
 import React, { Component } from "react"
 
 import { Board } from "./Board.js"
+import { Colour } from "./ColourPicker.js"
+import { Scoreboard } from "./Scoreboard.js"
 
 
 const NextAction = {
@@ -32,7 +34,9 @@ class Game extends Component {
                         status: ActionResultStatus.SUCCESS,
                         id: jsonResponse.id,
                         nextMove: jsonResponse.state.next_move,
-                        boardState: jsonResponse.state.board_state
+                        boardState: jsonResponse.state.board_state,
+                        redScore: jsonResponse.state.red_score,
+                        blueScore: jsonResponse.state.blue_score,
                     })
                 }
             }
@@ -47,7 +51,7 @@ class Game extends Component {
     render() {
         if (this.props.action == NextAction.START_NEW_GAME) {
             var params = {
-                "colour": this.props.colour,
+                "colour": (this.props.colour == Colour.Red ? "red" : "blue"),
                 "move_first": (this.props.move_first ? "TRUE" : "FALSE"),
             }
             this.postCommand("newgame_1p", params)
@@ -62,6 +66,13 @@ class Game extends Component {
                     <Board
                         value={this.props.board_state}
                         cb={this.props.pegClickCb}
+                    />
+                    <br/>
+                    <br/>
+                    <Scoreboard
+                        redScore={this.props.redScore}
+                        blueScore={this.props.blueScore}
+                        playerColour={this.props.colour}
                     />
                 </div>
             )
@@ -79,6 +90,13 @@ class Game extends Component {
                         value={this.props.board_state}
                         cb={this.props.pegClickCb}
                     />
+                    <br/>
+                    <br/>
+                    <Scoreboard
+                        redScore={this.props.redScore}
+                        blueScore={this.props.blueScore}
+                        playerColour={this.props.colour}
+                    />
                 </div>
             )
         }
@@ -93,6 +111,13 @@ class Game extends Component {
                     <Board
                         value={this.props.board_state}
                         cb={this.props.pegClickCb}
+                    />
+                    <br/>
+                    <br/>
+                    <Scoreboard
+                        redScore={this.props.redScore}
+                        blueScore={this.props.blueScore}
+                        playerColour={this.props.colour}
                     />
                 </div>
             )

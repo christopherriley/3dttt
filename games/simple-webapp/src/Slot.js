@@ -1,8 +1,14 @@
 import React, { Component } from "react"
+import { Colour } from "./ColourPicker"
 
 const styles = {
-    slot: {
-        textAlign: 'center'
+    redSlot: {
+        textAlign: 'center',
+        color: 'red'
+    },
+    blueSlot: {
+        textAlign: 'center',
+        color: 'blue'
     },
     slotHidden: {
         visibility: 'hidden'
@@ -11,14 +17,19 @@ const styles = {
 
 class Slot extends Component {
     render() {
-        if (this.props.value === undefined) {
+        if (this.props.value == Colour.Red) {
             return (
-                <h3 className="slotHidden" style={styles.slotHidden}>-</h3>
+                <h3 className="redSlot" style={styles.redSlot}>X</h3>
+            )
+        }
+        else if (this.props.value == Colour.Blue) {
+            return (
+                <h3 className="blueSlot" style={styles.blueSlot}>X</h3>
             )
         }
         else {
             return (
-                <h3 className="slot" style={styles.slot}>{this.props.value}</h3>
+                <h3 className="slotHidden" style={styles.slotHidden}>-</h3>
             )
         }
     }

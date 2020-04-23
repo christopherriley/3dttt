@@ -19,7 +19,9 @@ class App extends Component {
             nextAction: NextAction.START_NEW_GAME,
             moveFirst: null,
             boardState: null,
-            playerLastPegClick: null
+            playerLastPegClick: null,
+            redScore: 0,
+            blueScore: 0
         }
     }
 
@@ -36,6 +38,8 @@ class App extends Component {
                 gameId={this.state.gameId}
                 action={this.state.nextAction}
                 colour={this.state.playerColour}
+                redScore={this.state.redScore}
+                blueScore={this.state.blueScore}
                 move_first={this.state.moveFirst}
                 board_state={this.state.boardState}
                 player_last_click={this.state.playerLastPegClick}
@@ -63,7 +67,7 @@ class App extends Component {
 
     handleColourClick(colour) {
         console.log("colour selected: " + colour)
-        this.state.playerColour = (colour == "red" ? Colour.Red : Colour.Blue)
+        this.state.playerColour = colour
         this.setState(this.state)
     }
 
@@ -100,6 +104,8 @@ class App extends Component {
                 }
 
                 this.state.boardState = actionResult.boardState
+                this.state.redScore = actionResult.redScore
+                this.state.blueScore = actionResult.blueScore
 
                 this.setState(this.state)
             }
@@ -107,6 +113,8 @@ class App extends Component {
                 console.log("got success for PLAYER_MOVING state")
                 this.state.boardState = actionResult.boardState
                 this.state.nextAction = NextAction.CPU_TO_MOVE
+                this.state.redScore = actionResult.redScore
+                this.state.blueScore = actionResult.blueScore
 
                 this.setState(this.state)
             }
@@ -114,6 +122,8 @@ class App extends Component {
                 console.log("got success for CPU_TO_MOVE state")
                 this.state.boardState = actionResult.boardState
                 this.state.nextAction = NextAction.PLAYER_TO_MOVE
+                this.state.redScore = actionResult.redScore
+                this.state.blueScore = actionResult.blueScore
 
                 this.setState(this.state)
             }
