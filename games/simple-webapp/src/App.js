@@ -14,10 +14,12 @@ class App extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            gameId: null,
             playerColour: null,
             nextAction: NextAction.START_NEW_GAME,
             moveFirst: null,
             boardState: null,
+            playerLastPegClick: null
         }
     }
 
@@ -31,10 +33,12 @@ class App extends Component {
     renderGame() {
         return (
             <Game
+                gameId={this.state.gameId}
                 action={this.state.nextAction}
                 colour={this.state.playerColour}
                 move_first={this.state.moveFirst}
                 board_state={this.state.boardState}
+                player_last_click={this.state.playerLastPegClick}
                 actionResultCb={actionResult => this.handleActionResult(actionResult)}
                 pegClickCb={peg => this.handlePegClick(peg)}
             />
@@ -53,7 +57,7 @@ class App extends Component {
         } else if (this.state.moveFirst == null) {
             return this.renderMoveFirstPicker()
         } else {
-            return this.renderGame(this.state.nextAction)
+            return this.renderGame()
         }
     }
 
@@ -72,11 +76,17 @@ class App extends Component {
 
     handlePegClick(peg) {
         console.log("peg clicked: ", peg)
+        if (this.state.nextAction == NextAction.PLAYER_TO_MOVE) {
+            this.state.playerLastPegClick = peg
+            this.state.nextAction = NextAction.PLAYER_MOVING
+            this.setState(this.state)
+        }
     }
 
     handleActionResult(actionResult) {
         if (actionResult.status = ActionResultStatus.SUCCESS) {
             if (this.state.nextAction == NextAction.START_NEW_GAME) {
+                this.state.gameId = actionResult.id
                 console.log("handleActionResult(): action was: NextAction.START_NEW_GAME, actionResult.NextMove: ", actionResult.nextMove)
                 if (actionResult.nextMove == NextMove.RED_TO_MOVE && this.state.playerColour == Colour.Red ||
                     actionResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Blue) {
@@ -90,6 +100,20 @@ class App extends Component {
                 }
 
                 this.state.boardState = actionResult.boardState
+
+                this.setState(this.state)
+            }
+            else if (this.state.nextAction == NextAction.PLAYER_MOVING) {
+                console.log("got success for PLAYER_MOVING state")
+                this.state.boardState = actionResult.boardState
+                this.state.nextAction = NextAction.CPU_TO_MOVE
+
+                this.setState(this.state)
+            }
+            else if (this.state.nextAction == NextAction.CPU_TO_MOVE) {
+                console.log("got success for CPU_TO_MOVE state")
+                this.state.boardState = actionResult.boardState
+                this.state.nextAction = NextAction.PLAYER_TO_MOVE
 
                 this.setState(this.state)
             }

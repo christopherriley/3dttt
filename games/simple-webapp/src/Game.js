@@ -1,11 +1,13 @@
-import React, { Component} from "react"
+import React, { Component } from "react"
 
-import {Board} from "./Board.js"
+import { Board } from "./Board.js"
 
 
 const NextAction = {
     START_NEW_GAME: 1,
-    PLAYER_TO_MOVE: 2
+    PLAYER_TO_MOVE: 2,
+    PLAYER_MOVING: 3,
+    CPU_TO_MOVE: 4
 }
 
 const ActionResultStatus = {
@@ -22,12 +24,13 @@ class Game extends Component {
         xhttp.setRequestHeader('Content-type', 'application/json')
 
         var that = this
-        xhttp.onreadystatechange = function() {
+        xhttp.onreadystatechange = function () {
             if (this.readyState == 4) {
                 if (this.status == 200) {
                     var jsonResponse = JSON.parse(xhttp.responseText)
                     that.props.actionResultCb({
                         status: ActionResultStatus.SUCCESS,
+                        id: jsonResponse.id,
                         nextMove: jsonResponse.state.next_move,
                         boardState: jsonResponse.state.board_state
                     })
@@ -48,7 +51,7 @@ class Game extends Component {
                 "move_first": (this.props.move_first ? "TRUE" : "FALSE"),
             }
             this.postCommand("newgame_1p", params)
-            return(
+            return (
                 <h1>Start New Game</h1>
             )
         }
@@ -63,8 +66,28 @@ class Game extends Component {
                 </div>
             )
         }
+        else if (this.props.action == NextAction.PLAYER_MOVING) {
+            var params = {
+                "id": this.props.gameId,
+                "peg": (this.props.player_last_click),
+            }
+            this.postCommand("move", params)
+            return (
+                <div>
+                    <h1>Player moving...</h1>
+                    <Board
+                        value={this.props.board_state}
+                        cb={this.props.pegClickCb}
+                    />
+                </div>
+            )
+        }
         else if (this.props.action == NextAction.CPU_TO_MOVE) {
-            return(
+            var params = {
+                "id": this.props.gameId,
+            }
+            this.postCommand("cpu_move", params)
+            return (
                 <div>
                     <h1>CPU to move</h1>
                     <Board
@@ -75,11 +98,11 @@ class Game extends Component {
             )
         }
         else {
-            return(
+            return (
                 <h1>Unknown Next Action</h1>
             )
         }
     }
 }
 
-export {Game, NextAction, ActionResultStatus}
+export { Game, NextAction, ActionResultStatus }
