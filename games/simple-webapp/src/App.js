@@ -21,7 +21,8 @@ class App extends Component {
             boardState: null,
             playerLastPegClick: null,
             redScore: 0,
-            blueScore: 0
+            blueScore: 0,
+            error: null,
         }
     }
 
@@ -42,6 +43,7 @@ class App extends Component {
                 blueScore={this.state.blueScore}
                 move_first={this.state.moveFirst}
                 board_state={this.state.boardState}
+                error={this.state.error}
                 player_last_click={this.state.playerLastPegClick}
                 actionResultCb={actionResult => this.handleActionResult(actionResult)}
                 pegClickCb={peg => this.handlePegClick(peg)}
@@ -88,7 +90,7 @@ class App extends Component {
     }
 
     handleActionResult(actionResult) {
-        if (actionResult.status = ActionResultStatus.SUCCESS) {
+        if (actionResult.status == ActionResultStatus.SUCCESS) {
             if (this.state.nextAction == NextAction.START_NEW_GAME) {
                 this.state.gameId = actionResult.id
                 console.log("handleActionResult(): action was: NextAction.START_NEW_GAME, actionResult.NextMove: ", actionResult.nextMove)
@@ -124,6 +126,25 @@ class App extends Component {
                 this.state.nextAction = NextAction.PLAYER_TO_MOVE
                 this.state.redScore = actionResult.redScore
                 this.state.blueScore = actionResult.blueScore
+
+                this.setState(this.state)
+            }
+        } else {
+            if (this.state.nextAction == NextAction.START_NEW_GAME) {
+                this.state.nextAction = NextAction.START_NEW_GAME_FAILED
+                this.state.error = actionResult.errorMsg
+
+                this.setState(this.state)
+            }
+            else if (this.state.nextAction == NextAction.PLAYER_MOVING) {
+                this.state.nextAction = NextAction.PLAYER_MOVING_FAILED
+                this.state.error = actionResult.errorMsg
+
+                this.setState(this.state)
+            }
+            else if (this.state.nextAction == NextAction.CPU_TO_MOVE) {
+                this.state.nextAction = NextAction.CPU_TO_MOVE_FAILED
+                this.state.error = actionResult.errorMsg
 
                 this.setState(this.state)
             }

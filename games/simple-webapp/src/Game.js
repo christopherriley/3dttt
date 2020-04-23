@@ -3,13 +3,17 @@ import React, { Component } from "react"
 import { Board } from "./Board.js"
 import { Colour } from "./ColourPicker.js"
 import { Scoreboard } from "./Scoreboard.js"
+import { GameError } from "./GameError.js"
 
 
 const NextAction = {
     START_NEW_GAME: 1,
-    PLAYER_TO_MOVE: 2,
-    PLAYER_MOVING: 3,
-    CPU_TO_MOVE: 4
+    START_NEW_GAME_FAILED: 2,
+    PLAYER_TO_MOVE: 3,
+    PLAYER_MOVING: 4,
+    PLAYER_MOVING_FAILED: 5,
+    CPU_TO_MOVE: 6,
+    CPU_TO_MOVE_FAILED: 7
 }
 
 const ActionResultStatus = {
@@ -39,6 +43,13 @@ class Game extends Component {
                         blueScore: jsonResponse.state.blue_score,
                     })
                 }
+                else {
+                    var jsonResponse = JSON.parse(xhttp.responseText)
+                    that.props.actionResultCb({
+                        status: ActionResultStatus.FAIL,
+                        errorMsg: jsonResponse.error,
+                    })
+                }
             }
         }
 
@@ -57,6 +68,11 @@ class Game extends Component {
             this.postCommand("newgame_1p", params)
             return (
                 <h1>Start New Game</h1>
+            )
+        }
+        else if (this.props.action == NextAction.START_NEW_GAME_FAILED) {
+            return (
+                <GameError msg={this.props.error}/>
             )
         }
         else if (this.props.action == NextAction.PLAYER_TO_MOVE) {
@@ -100,6 +116,11 @@ class Game extends Component {
                 </div>
             )
         }
+        else if (this.props.action == NextAction.PLAYER_MOVING_FAILED) {
+            return (
+                <GameError msg={this.props.error}/>
+            )
+        }
         else if (this.props.action == NextAction.CPU_TO_MOVE) {
             var params = {
                 "id": this.props.gameId,
@@ -120,6 +141,11 @@ class Game extends Component {
                         playerColour={this.props.colour}
                     />
                 </div>
+            )
+        }
+        else if (this.props.action == NextAction.CPU_TO_MOVE_FAILED) {
+            return (
+                <GameError msg={this.props.error}/>
             )
         }
         else {
