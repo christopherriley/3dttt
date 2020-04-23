@@ -53,7 +53,10 @@ func (mc CPUMoveCommand) Execute(s *state.GlobalState) (Response, error) {
 		os.Exit(1)
 	}
 
-	r := CreateResponse(state1P.Game.GetGameState().NextMove, 0, 0, state1P.Game.GetBoard())
+	r := CreateResponse(state1P.Game.GetGameState().NextMove,
+		state1P.Game.GetGameState().RedLines,
+		state1P.Game.GetGameState().BlueLines,
+		state1P.Game.GetBoard())
 	r.Add("cpu_move", engine.PegToString(move))
 
 	return *r, nil

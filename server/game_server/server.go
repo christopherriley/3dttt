@@ -70,7 +70,13 @@ func (gs GameServer) gamePostHandler(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("{\"error\": \"failed to extract command parameters\"}"))
 	}
-	params := command.CreateParams(paramsMap)
+
+	params, paramErr := command.CreateParams(paramsMap)
+	if paramErr != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to create command params: %s\"}\n", err)))
+	}
+
 	var cmd command.Command
 	if cmd, err = command.CreateCommand(gr.CommandName, params); err != nil {
 		w.WriteHeader(http.StatusBadRequest)

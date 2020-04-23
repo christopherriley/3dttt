@@ -9,14 +9,18 @@ type Params struct {
 	paramsMap map[string]string
 }
 
-func CreateParams(m map[string]interface{}) Params {
+func CreateParams(m map[string]interface{}) (Params, error) {
 	var p Params
 	p.paramsMap = make(map[string]string)
 	for k, v := range m {
-		p.paramsMap[k] = v.(string)
+		valString, ok := v.(string)
+		if !ok {
+			return Params{}, fmt.Errorf("parameter '%s' with value '%s' could not be converted to string", k, v)
+		}
+		p.paramsMap[k] = valString
 	}
 
-	return p
+	return p, nil
 }
 
 func (p Params) Get(k string) (string, error) {

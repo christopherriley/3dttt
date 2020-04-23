@@ -60,7 +60,10 @@ func (mc MoveCommand) Execute(s *state.GlobalState) (Response, error) {
 		moveStatus = "invalid"
 	}
 
-	r = CreateResponse(state1P.Game.GetGameState().NextMove, 0, 0, state1P.Game.GetBoard())
+	r = CreateResponse(state1P.Game.GetGameState().NextMove,
+		state1P.Game.GetGameState().RedLines,
+		state1P.Game.GetGameState().BlueLines,
+		state1P.Game.GetBoard())
 	r.Add("move_status", moveStatus)
 
 	return *r, nil
