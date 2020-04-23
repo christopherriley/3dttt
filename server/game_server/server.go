@@ -52,6 +52,9 @@ func (gs GameServer) gamePostHandler(w http.ResponseWriter, req *http.Request) {
 	var gr gameRequest
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&gr)
+
+	w.Header().Set("Content-Type", "application/json")
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to decode request: %s\"}\n", err)))
@@ -69,12 +72,14 @@ func (gs GameServer) gamePostHandler(w http.ResponseWriter, req *http.Request) {
 	if paramsMap, ok = gr.CommandParams.(map[string]interface{}); !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("{\"error\": \"failed to extract command parameters\"}"))
+		return
 	}
 
 	params, paramErr := command.CreateParams(paramsMap)
 	if paramErr != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to create command params: %s\"}\n", err)))
+		return
 	}
 
 	var cmd command.Command
@@ -88,8 +93,8 @@ func (gs GameServer) gamePostHandler(w http.ResponseWriter, req *http.Request) {
 	if r, err = cmd.Execute(&gs.state); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("{\"error\": \"failed to execute command: %s\"}\n", err)))
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(r.String()))
 }
