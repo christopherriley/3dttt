@@ -85,7 +85,7 @@ class Game extends Component {
                 "colour": (this.state.playerColour == Colour.Red ? "red" : "blue"),
                 "move_first": (this.state.moveFirst ? "TRUE" : "FALSE"),
             }
-            this.postCommand("newgame_1p", params, result => this.handleActionResult(result))
+            this.postCommand("newgame_1p", params, result => this.handlePostCommandResult(result))
             return (
                 <h1>Start New Game</h1>
             )
@@ -118,7 +118,7 @@ class Game extends Component {
                 "id": this.state.gameId,
                 "peg": (this.state.playerLastPegClick),
             }
-            this.postCommand("move", params, result => this.handleActionResult(result))
+            this.postCommand("move", params, result => this.handlePostCommandResult(result))
             return (
                 <div>
                     <h1>Player moving...</h1>
@@ -145,7 +145,7 @@ class Game extends Component {
             var params = {
                 "id": this.state.gameId,
             }
-            this.postCommand("cpu_move", params, result => this.handleActionResult(result))
+            this.postCommand("cpu_move", params, result => this.handlePostCommandResult(result))
             return (
                 <div>
                     <h1>CPU to move</h1>
@@ -175,57 +175,57 @@ class Game extends Component {
         }
     }
 
-    handleActionResult(actionResult) {
-        if (actionResult.status == ActionResultStatus.SUCCESS) {
+    handlePostCommandResult(postCommandResult) {
+        if (postCommandResult.status == ActionResultStatus.SUCCESS) {
             if (this.state.nextAction == NextAction.START_NEW_GAME) {
-                this.state.gameId = actionResult.id
-                this.state.boardState = actionResult.boardState
-                this.state.redScore = actionResult.redScore
-                this.state.blueScore = actionResult.blueScore
+                this.state.gameId = postCommandResult.id
+                this.state.boardState = postCommandResult.boardState
+                this.state.redScore = postCommandResult.redScore
+                this.state.blueScore = postCommandResult.blueScore
 
-                if (actionResult.nextMove == NextMove.RED_TO_MOVE && this.state.playerColour == Colour.Red ||
-                    actionResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Blue) {
+                if (postCommandResult.nextMove == NextMove.RED_TO_MOVE && this.state.playerColour == Colour.Red ||
+                    postCommandResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Blue) {
                     this.state.nextAction = NextAction.PLAYER_TO_MOVE
                 }
-                else if (actionResult.nextMove == NextMove.RED_TO_MOVE && this.state.playerColour == Colour.Blue ||
-                    actionResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Red) {
+                else if (postCommandResult.nextMove == NextMove.RED_TO_MOVE && this.state.playerColour == Colour.Blue ||
+                    postCommandResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Red) {
                     this.state.nextAction = NextAction.CPU_TO_MOVE
                 }
 
                 this.setState(this.state)
             }
             else if (this.state.nextAction == NextAction.PLAYER_MOVING) {
-                this.state.boardState = actionResult.boardState
+                this.state.boardState = postCommandResult.boardState
                 this.state.nextAction = NextAction.CPU_TO_MOVE
-                this.state.redScore = actionResult.redScore
-                this.state.blueScore = actionResult.blueScore
+                this.state.redScore = postCommandResult.redScore
+                this.state.blueScore = postCommandResult.blueScore
 
                 this.setState(this.state)
             }
             else if (this.state.nextAction == NextAction.CPU_TO_MOVE) {
-                this.state.boardState = actionResult.boardState
+                this.state.boardState = postCommandResult.boardState
                 this.state.nextAction = NextAction.PLAYER_TO_MOVE
-                this.state.redScore = actionResult.redScore
-                this.state.blueScore = actionResult.blueScore
+                this.state.redScore = postCommandResult.redScore
+                this.state.blueScore = postCommandResult.blueScore
 
                 this.setState(this.state)
             }
         } else {
             if (this.state.nextAction == NextAction.START_NEW_GAME) {
                 this.state.nextAction = NextAction.START_NEW_GAME_FAILED
-                this.state.error = actionResult.errorMsg
+                this.state.error = postCommandResult.errorMsg
 
                 this.setState(this.state)
             }
             else if (this.state.nextAction == NextAction.PLAYER_MOVING) {
                 this.state.nextAction = NextAction.PLAYER_MOVING_FAILED
-                this.state.error = actionResult.errorMsg
+                this.state.error = postCommandResult.errorMsg
 
                 this.setState(this.state)
             }
             else if (this.state.nextAction == NextAction.CPU_TO_MOVE) {
                 this.state.nextAction = NextAction.CPU_TO_MOVE_FAILED
-                this.state.error = actionResult.errorMsg
+                this.state.error = postCommandResult.errorMsg
 
                 this.setState(this.state)
             }
