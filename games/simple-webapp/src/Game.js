@@ -177,11 +177,12 @@ class Game extends Component {
 
     handlePostCommandResult(postCommandResult) {
         if (postCommandResult.status == ActionResultStatus.SUCCESS) {
+            this.state.boardState = postCommandResult.boardState
+            this.state.redScore = postCommandResult.redScore
+            this.state.blueScore = postCommandResult.blueScore
+
             if (this.state.nextAction == NextAction.START_NEW_GAME) {
                 this.state.gameId = postCommandResult.id
-                this.state.boardState = postCommandResult.boardState
-                this.state.redScore = postCommandResult.redScore
-                this.state.blueScore = postCommandResult.blueScore
 
                 if (postCommandResult.nextMove == NextMove.RED_TO_MOVE && this.state.playerColour == Colour.Red ||
                     postCommandResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Blue) {
@@ -191,45 +192,28 @@ class Game extends Component {
                     postCommandResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Red) {
                     this.state.nextAction = NextAction.CPU_TO_MOVE
                 }
-
-                this.setState(this.state)
             }
             else if (this.state.nextAction == NextAction.PLAYER_MOVING) {
-                this.state.boardState = postCommandResult.boardState
                 this.state.nextAction = NextAction.CPU_TO_MOVE
-                this.state.redScore = postCommandResult.redScore
-                this.state.blueScore = postCommandResult.blueScore
-
-                this.setState(this.state)
             }
             else if (this.state.nextAction == NextAction.CPU_TO_MOVE) {
-                this.state.boardState = postCommandResult.boardState
                 this.state.nextAction = NextAction.PLAYER_TO_MOVE
-                this.state.redScore = postCommandResult.redScore
-                this.state.blueScore = postCommandResult.blueScore
-
-                this.setState(this.state)
             }
         } else {
+            this.state.error = postCommandResult.errorMsg
+
             if (this.state.nextAction == NextAction.START_NEW_GAME) {
                 this.state.nextAction = NextAction.START_NEW_GAME_FAILED
-                this.state.error = postCommandResult.errorMsg
-
-                this.setState(this.state)
             }
             else if (this.state.nextAction == NextAction.PLAYER_MOVING) {
                 this.state.nextAction = NextAction.PLAYER_MOVING_FAILED
-                this.state.error = postCommandResult.errorMsg
-
-                this.setState(this.state)
             }
             else if (this.state.nextAction == NextAction.CPU_TO_MOVE) {
                 this.state.nextAction = NextAction.CPU_TO_MOVE_FAILED
-                this.state.error = postCommandResult.errorMsg
-
-                this.setState(this.state)
             }
         }
+
+        this.setState(this.state)
     }
 
     handlePegClick(peg) {
