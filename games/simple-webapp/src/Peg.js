@@ -1,6 +1,6 @@
-import React, { Component} from "react"
+import React, { Component } from "react"
 
-import {Slot} from "./Slot.js"
+import { Slot } from "./Slot.js"
 
 const styles = {
     pegDiv: {
@@ -19,22 +19,22 @@ class Peg extends Component {
         if (this.props.value === undefined) {
             return (
                 <div className="spacerDiv" style={styles.spacerDiv}>
-                    <div><Slot/></div>
-                    <div><Slot/></div>
-                    <div><Slot/></div>
+                    <div><Slot /></div>
+                    <div><Slot /></div>
+                    <div><Slot /></div>
                 </div>
             )
         }
         else {
             return (
                 <div className="pegDiv" style={styles.pegDiv} onClick={() => this.props.cb(this.props.label)}>
-                    <div><Slot value={this.props.value.Slot[2]}/></div>
-                    <div><Slot value={this.props.value.Slot[1]}/></div>
-                    <div><Slot value={this.props.value.Slot[0]}/></div>
+                    <div><Slot value={this.props.value.Slot[2]} /></div>
+                    <div><Slot value={this.props.value.Slot[1]} /></div>
+                    <div><Slot value={this.props.value.Slot[0]} /></div>
                 </div>
             )
         }
     }
 }
 
-export {Peg}
+export { Peg }

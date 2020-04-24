@@ -180,6 +180,7 @@ class Game extends Component {
             this.state.boardState = postCommandResult.boardState
             this.state.redScore = postCommandResult.redScore
             this.state.blueScore = postCommandResult.blueScore
+            this.state.error = null
 
             if (this.state.nextAction == NextAction.START_NEW_GAME) {
                 this.state.gameId = postCommandResult.id
@@ -188,8 +189,7 @@ class Game extends Component {
                     postCommandResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Blue) {
                     this.state.nextAction = NextAction.PLAYER_TO_MOVE
                 }
-                else if (postCommandResult.nextMove == NextMove.RED_TO_MOVE && this.state.playerColour == Colour.Blue ||
-                    postCommandResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Red) {
+                else {
                     this.state.nextAction = NextAction.CPU_TO_MOVE
                 }
             }
