@@ -34,7 +34,11 @@ class App extends Component {
         }
         else {
             return (
-                <Game playerColour={this.state.playerColour} moveFirst={this.state.moveFirst}/>
+                <Game
+                    url = 'http://localhost:8080/api/v1/game'
+                    playerColour={this.state.playerColour}
+                    moveFirst={this.state.moveFirst}
+                />
             )
         }
     }

@@ -5,6 +5,7 @@ import { Colour } from "./ColourPicker.js"
 import { Scoreboard } from "./Scoreboard.js"
 import { GameError } from "./GameError.js"
 
+import { PostCommand } from "./PostCommand"
 
 const NextAction = {
     START_NEW_GAME: 1,
@@ -16,19 +17,10 @@ const NextAction = {
     CPU_TO_MOVE_FAILED: 7
 }
 
-const NextMove = {
-    RED_TO_MOVE: "RedToMove",
-    BLUE_TO_MOVE: "BlueToMove"
-}
-
-const ActionResultStatus = {
-    SUCCESS: "success",
-    FAIL: "fail"
-}
-
 class Game extends Component {
     constructor(props) {
         super(props)
+        this.url = this.props.url
         this.state = {
             gameId: null,
             playerColour: props.playerColour,
@@ -43,49 +35,22 @@ class Game extends Component {
         }
     }
 
-    postCommand(command, params, cb) {
-        var xhttp = new XMLHttpRequest()
-        var url = 'http://localhost:8080/api/v1/game'
-
-        xhttp.open('POST', url, true)
-        xhttp.setRequestHeader('Content-type', 'application/json')
-
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4) {
-                if (this.status == 200) {
-                    var jsonResponse = JSON.parse(xhttp.responseText)
-                    cb({
-                        status: ActionResultStatus.SUCCESS,
-                        id: jsonResponse.id,
-                        nextMove: jsonResponse.state.next_move,
-                        boardState: jsonResponse.state.board_state,
-                        redScore: jsonResponse.state.red_score,
-                        blueScore: jsonResponse.state.blue_score,
-                    })
-                }
-                else {
-                    var jsonResponse = JSON.parse(xhttp.responseText)
-                    cb({
-                        status: ActionResultStatus.FAIL,
-                        errorMsg: jsonResponse.error,
-                    })
-                }
-            }
-        }
-
-        var body = JSON.stringify({
-            "command": command,
-            "params": params,
-        })
-        xhttp.send(body)
-    }
     render() {
         if (this.state.nextAction == NextAction.START_NEW_GAME) {
             var params = {
                 "colour": (this.state.playerColour == Colour.Red ? "red" : "blue"),
                 "move_first": (this.state.moveFirst ? "TRUE" : "FALSE"),
             }
-            this.postCommand("newgame_1p", params, result => this.handlePostCommandResult(result))
+
+            var successNewState = (this.state.moveFirst ? NextAction.PLAYER_TO_MOVE : NextAction.CPU_TO_MOVE)
+
+            new PostCommand(
+                this.url,
+                "newgame_1p",
+                params,
+                newGameState => this.handleCommandSuccess(newGameState, successNewState),
+                error => this.handleCommandFail(error, NextAction.START_NEW_GAME_FAILED)).send()
+
             return (
                 <h1>Start New Game</h1>
             )
@@ -118,7 +83,14 @@ class Game extends Component {
                 "id": this.state.gameId,
                 "peg": (this.state.playerLastPegClick),
             }
-            this.postCommand("move", params, result => this.handlePostCommandResult(result))
+
+            new PostCommand(
+                this.url,
+                "move",
+                params,
+                newGameState => this.handleCommandSuccess(newGameState, NextAction.CPU_TO_MOVE),
+                error => this.handleCommandFail(error, NextAction.PLAYER_MOVING_FAILED)).send()
+
             return (
                 <div>
                     <h1>Player moving...</h1>
@@ -145,7 +117,14 @@ class Game extends Component {
             var params = {
                 "id": this.state.gameId,
             }
-            this.postCommand("cpu_move", params, result => this.handlePostCommandResult(result))
+
+            new PostCommand(
+                this.url,
+                "cpu_move",
+                params,
+                newGameState => this.handleCommandSuccess(newGameState, NextAction.PLAYER_TO_MOVE),
+                error => this.handleCommandFail(error, NextAction.CPU_TO_MOVE_FAILED)).send()
+
             return (
                 <div>
                     <h1>CPU to move</h1>
@@ -175,47 +154,6 @@ class Game extends Component {
         }
     }
 
-    handlePostCommandResult(postCommandResult) {
-        if (postCommandResult.status == ActionResultStatus.SUCCESS) {
-            this.state.boardState = postCommandResult.boardState
-            this.state.redScore = postCommandResult.redScore
-            this.state.blueScore = postCommandResult.blueScore
-            this.state.error = null
-
-            if (this.state.nextAction == NextAction.START_NEW_GAME) {
-                this.state.gameId = postCommandResult.id
-
-                if (postCommandResult.nextMove == NextMove.RED_TO_MOVE && this.state.playerColour == Colour.Red ||
-                    postCommandResult.nextMove == NextMove.BLUE_TO_MOVE && this.state.playerColour == Colour.Blue) {
-                    this.state.nextAction = NextAction.PLAYER_TO_MOVE
-                }
-                else {
-                    this.state.nextAction = NextAction.CPU_TO_MOVE
-                }
-            }
-            else if (this.state.nextAction == NextAction.PLAYER_MOVING) {
-                this.state.nextAction = NextAction.CPU_TO_MOVE
-            }
-            else if (this.state.nextAction == NextAction.CPU_TO_MOVE) {
-                this.state.nextAction = NextAction.PLAYER_TO_MOVE
-            }
-        } else {
-            this.state.error = postCommandResult.errorMsg
-
-            if (this.state.nextAction == NextAction.START_NEW_GAME) {
-                this.state.nextAction = NextAction.START_NEW_GAME_FAILED
-            }
-            else if (this.state.nextAction == NextAction.PLAYER_MOVING) {
-                this.state.nextAction = NextAction.PLAYER_MOVING_FAILED
-            }
-            else if (this.state.nextAction == NextAction.CPU_TO_MOVE) {
-                this.state.nextAction = NextAction.CPU_TO_MOVE_FAILED
-            }
-        }
-
-        this.setState(this.state)
-    }
-
     handlePegClick(peg) {
         console.log("peg clicked: ", peg)
         if (this.state.nextAction == NextAction.PLAYER_TO_MOVE) {
@@ -224,6 +162,30 @@ class Game extends Component {
 
             this.setState(this.state)
         }
+    }
+
+    handleCommandSuccess(newGameState, nextAction) {
+        console.log("onCommandSuccesS(): nextAction: ", nextAction)
+        this.state.error = null
+
+        this.state.nextAction = nextAction
+
+        if (!(newGameState.id === undefined)) {
+            this.state.gameId = newGameState.id
+            console.log("onCommandSuccess(): got a new game id: ", this.state.gameId)
+        }
+        this.state.boardState = newGameState.boardState
+        this.state.redScore = newGameState.redScore
+        this.state.blueScore = newGameState.blueScore
+
+        this.setState(this.state)
+    }
+
+    handleCommandFail(error, nextAction) {
+        this.state.error = error
+        this.state.nextAction = nextAction
+
+        this.setState(this.state)
     }
 }
 
