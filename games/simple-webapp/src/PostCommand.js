@@ -1,25 +1,12 @@
-class PostCommand {
-    constructor(url, command, params, successCb, failCb) {
-        this.url = url
-        this.command = command
-        this.params = params
-        this.successCb = successCb
-        this.failCb = failCb
-    }
+function postCommand(url, command, params) {
+    var xhttp = new XMLHttpRequest()
 
-    send() {
-        var xhttp = new XMLHttpRequest()
-        //var url = 'http://localhost:8080/api/v1/game'
-
-        xhttp.open('POST', this.url, true)
-        xhttp.setRequestHeader('Content-type', 'application/json')
-
-        var that = this
+    return new Promise(function(resolve, reject) {
         xhttp.onreadystatechange = function () {
-            if (this.readyState == 4) {
+            if (xhttp.readyState == 4) {
                 var jsonResponse = JSON.parse(xhttp.responseText)
-                if (this.status == 200) {
-                    that.successCb({
+                if (xhttp.status == 200) {
+                    resolve({
                         id: jsonResponse.id,
                         boardState: jsonResponse.state.board_state,
                         redScore: jsonResponse.state.red_score,
@@ -27,17 +14,23 @@ class PostCommand {
                     })
                 }
                 else {
-                    that.failCb(jsonResponse.error)
+                    reject({
+                        error: jsonResponse.error,
+                    })
                 }
             }
         }
 
+        xhttp.open('POST', url, true)
+        xhttp.setRequestHeader('Content-type', 'application/json')
+
         var body = JSON.stringify({
-            "command": that.command,
-            "params": that.params,
+            "command": command,
+            "params": params,
         })
-        xhttp.send(body)        
-    }
+
+        xhttp.send(body)
+    })
 }
 
-export { PostCommand }
+export { postCommand }

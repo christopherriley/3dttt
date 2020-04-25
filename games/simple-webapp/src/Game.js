@@ -5,7 +5,7 @@ import { Colour } from "./ColourPicker.js"
 import { Scoreboard } from "./Scoreboard.js"
 import { GameError } from "./GameError.js"
 
-import { PostCommand } from "./PostCommand"
+import { postCommand } from "./PostCommand"
 
 const NextAction = {
     START_NEW_GAME: 1,
@@ -44,12 +44,9 @@ class Game extends Component {
 
             var successNewState = (this.state.moveFirst ? NextAction.PLAYER_TO_MOVE : NextAction.CPU_TO_MOVE)
 
-            new PostCommand(
-                this.url,
-                "newgame_1p",
-                params,
-                newGameState => this.handleCommandSuccess(newGameState, successNewState),
-                error => this.handleCommandFail(error, NextAction.START_NEW_GAME_FAILED)).send()
+            postCommand(this.url, "newgame_1p", params)
+                .then(newGameState => this.handleCommandSuccess(newGameState, successNewState))
+                .catch(error => this.handleCommandFail(error, NextAction.START_NEW_GAME_FAILED))
 
             return (
                 <h1>Start New Game</h1>
@@ -84,12 +81,9 @@ class Game extends Component {
                 "peg": (this.state.playerLastPegClick),
             }
 
-            new PostCommand(
-                this.url,
-                "move",
-                params,
-                newGameState => this.handleCommandSuccess(newGameState, NextAction.CPU_TO_MOVE),
-                error => this.handleCommandFail(error, NextAction.PLAYER_MOVING_FAILED)).send()
+            postCommand(this.url, "move", params)
+                .then(newGameState => this.handleCommandSuccess(newGameState, NextAction.CPU_TO_MOVE))
+                .catch(error => this.handleCommandFail(error, NextAction.PLAYER_MOVING_FAILED))
 
             return (
                 <div>
@@ -118,12 +112,9 @@ class Game extends Component {
                 "id": this.state.gameId,
             }
 
-            new PostCommand(
-                this.url,
-                "cpu_move",
-                params,
-                newGameState => this.handleCommandSuccess(newGameState, NextAction.PLAYER_TO_MOVE),
-                error => this.handleCommandFail(error, NextAction.CPU_TO_MOVE_FAILED)).send()
+            postCommand(this.url, "cpu_move", params)
+                .then(newGameState => this.handleCommandSuccess(newGameState, NextAction.PLAYER_TO_MOVE))
+                .catch(error => this.handleCommandFail(error, NextAction.CPU_TO_MOVE_FAILED))
 
             return (
                 <div>
@@ -164,25 +155,25 @@ class Game extends Component {
         }
     }
 
-    handleCommandSuccess(newGameState, nextAction) {
+    handleCommandSuccess(result, nextAction) {
         console.log("onCommandSuccesS(): nextAction: ", nextAction)
         this.state.error = null
 
         this.state.nextAction = nextAction
 
-        if (!(newGameState.id === undefined)) {
-            this.state.gameId = newGameState.id
+        if (!(result.id === undefined)) {
+            this.state.gameId = result.id
             console.log("onCommandSuccess(): got a new game id: ", this.state.gameId)
         }
-        this.state.boardState = newGameState.boardState
-        this.state.redScore = newGameState.redScore
-        this.state.blueScore = newGameState.blueScore
+        this.state.boardState = result.boardState
+        this.state.redScore = result.redScore
+        this.state.blueScore = result.blueScore
 
         this.setState(this.state)
     }
 
-    handleCommandFail(error, nextAction) {
-        this.state.error = error
+    handleCommandFail(result, nextAction) {
+        this.state.error = result.error
         this.state.nextAction = nextAction
 
         this.setState(this.state)
