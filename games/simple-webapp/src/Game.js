@@ -26,7 +26,6 @@ class Game extends Component {
             playerColour: props.playerColour,
             nextAction: NextAction.START_NEW_GAME,
             moveFirst: props.moveFirst,
-            nextMoveColour: (props.moveFirst ? props.playerColour : (props.playerColour == Colour.Red ? Colour.Blue : Colour.Red)),
             boardState: null,
             playerLastPegClick: null,
             redScore: 0,
