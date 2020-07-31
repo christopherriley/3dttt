@@ -155,7 +155,7 @@ class Game extends Component {
     }
 
     handleCommandSuccess(result, nextAction) {
-        console.log("onCommandSuccesS(): nextAction: ", nextAction)
+        console.log("onCommandSuccess(): nextAction: ", nextAction)
         this.state.error = null
 
         this.state.nextAction = nextAction
