@@ -4,17 +4,20 @@
   "description": "simple webapp for 3dttt",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine",
+    "coverage": "nyc npm run test && nyc report --reporter=html"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.1.0",
     "@babel/core": "^7.1.0",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-env": "^7.11.0",
     "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.10.5",
     "babel-loader": "^8.0.2",
     "css-loader": "^1.0.0",
+    "jasmine": "^3.6.1",
     "style-loader": "^0.23.0",
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.1",
